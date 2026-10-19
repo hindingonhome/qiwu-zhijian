@@ -9,9 +9,62 @@ concurrency:
   group: release-main
   cancel-in-progress: false
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: Windows
+          - os: ubuntu-24.04
+            target: Linux
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: node node_modules/electron/install.js
+      - run: npm test
+      - run: npm run desktop:prepare
+      - if: runner.os == 'Linux'
+        run: |
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y xvfb
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - if: runner.os == 'Windows'
+        run: node tests/desktop-smoke.cjs
+      - if: runner.os == 'Linux'
+        run: xvfb-run -a node tests/desktop-smoke.cjs
+      - if: runner.os == 'Windows'
+        run: npm run desktop:build -- --win portable --x64
+      - if: runner.os == 'Linux'
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: '1'
+        run: npm run desktop:build -- --linux AppImage --x64
+      - name: Test portable Windows executable
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $env:WUPAI_TEST_EXECUTABLE=(Get-ChildItem desktop-output/*-Windows.exe).FullName
+          node tests/desktop-smoke.cjs
+      - name: Test Linux AppImage
+        if: runner.os == 'Linux'
+        run: |
+          APPIMAGE_EXTRACT_AND_RUN=1 WUPAI_TEST_EXECUTABLE="$(find "$PWD/desktop-output" -maxdepth 1 -name '*-Linux.AppImage' -print -quit)" xvfb-run -a node tests/desktop-smoke.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wupai-native-${{ matrix.target }}
+          path: |
+            desktop-output/*-Windows.exe
+            desktop-output/*-Linux.AppImage
+          retention-days: 14
+  android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,44 +81,69 @@ jobs:
           log-accepted-android-sdk-licenses: false
       - run: sdkmanager "platforms;android-36" "build-tools;35.0.0" "build-tools;36.0.0"
       - run: npm ci
-      - run: npm test
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:browser
-      - run: npm run build -- --native
-      - run: node tests/offline-export-check.cjs
       - run: npm run mobile:sync
-      - run: node tests/native-web.cjs
       - name: Restore private signing key
         env:
           SIGNING_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
           test -n "$SIGNING_KEY"
-          printf '%s' "$SIGNING_KEY" | base64 --decode > "$RUNNER_TEMP/qiwu-release.jks"
-          chmod 600 "$RUNNER_TEMP/qiwu-release.jks"
+          printf '%s' "$SIGNING_KEY" | base64 --decode > "$RUNNER_TEMP/wupai-release.jks"
+          chmod 600 "$RUNNER_TEMP/wupai-release.jks"
       - name: Build signed Android app
         working-directory: android
         env:
-          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/qiwu-release.jks
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/wupai-release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: ./gradlew assembleRelease --no-daemon --console=plain
-      - name: Assemble verified downloads
+      - name: Verify Android package
         run: |
+          mkdir -p .release-work
           VERSION=$(node -p "require('./package.json').version")
-          cp android/app/build/outputs/apk/release/app-release.apk ".release-work/QiwuZhijian-${VERSION}-Android.apk"
-          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose ".release-work/QiwuZhijian-${VERSION}-Android.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk ".release-work/Wupai-${VERSION}-Android.apk"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose ".release-work/Wupai-${VERSION}-Android.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wupai-native-Android
+          path: .release-work/*-Android.apk
+          retention-days: 14
+      - name: Remove signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/wupai-release.jks"
+  release:
+    needs: [desktop, android]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - run: npm run build -- --native
+      - run: node tests/offline-export-check.cjs
+      - run: npm run mobile:prepare
+      - run: node tests/native-web.cjs
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wupai-native-*
+          merge-multiple: true
+          path: .release-work
+      - name: Assemble platform downloads
+        run: |
           npm run package:platforms
           node scripts/checksums.mjs
           python3 scripts/verify-platforms.py
       - uses: actions/upload-artifact@v4
         with:
-          name: qiwu-zhijian-release
+          name: wupai-release
           path: dist/*
           retention-days: 14
       - name: Publish a new version only
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/publish-release.mjs
-      - name: Remove signing key
-        if: always()
-        run: rm -f "$RUNNER_TEMP/qiwu-release.jks"

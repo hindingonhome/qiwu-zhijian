@@ -1,20 +1,20 @@
-# 器物之间 · Surface Studio
+# 物派 · Surface Studio
 
 离线查看器物模型、试验纹样与铜漆材质的三维工作室。包含花瓶及 11 个水果器型，支持本地图片和模型导入、材质切换、密度记忆、灯光调节及 PNG / GLB 导出。
 
 **开发者：CHAMBER** · [97101yy@gmail.com](mailto:97101yy@gmail.com)
 
-**版本：V1.0.1** · 保留所有权利，不授予开源许可。
+**版本：V1.1.0** · 保留所有权利，不授予开源许可。
 
 ## 下载与使用
 
-在 [Releases 下载页](https://github.com/hindingonhome/qiwu-zhijian/releases)获取：
+在 [Releases 下载页](https://github.com/hindingonhome/wupai/releases)获取：
 
-- `QiwuZhijian-*-Desktop.zip`：电脑离线网页、Windows 启动脚本及说明。
-- `QiwuZhijian-*-Android.zip`：安卓 APK、离线网页及说明。
-- `QiwuZhijian-*-iPhone.zip`：iPhone 离线网页、Models 文件夹内的 25 个 USDZ 及说明。
-- `QiwuZhijian-*-Linux.zip`：Linux 离线网页、启动脚本及说明。
-- `QiwuZhijian-*-Android.apk`：安卓安装版，资源随应用打包，安装后离线运行。
+- `Wupai-*-Desktop.zip`：Windows 免安装 EXE、备用 HTML 及说明。
+- `Wupai-*-Android.zip`：安卓 APK、离线网页及说明。
+- `Wupai-*-iPhone.zip`：iPhone 离线网页、Models 文件夹内的 25 个 USDZ 及说明。
+- `Wupai-*-Linux.zip`：Linux AppImage 免安装应用、备用 HTML 及说明。
+- `Wupai-*-Android.apk`：安卓安装版，资源随应用打包，安装后离线运行。
 - `SHA256SUMS.txt`：下载文件校验值。
 
 安卓首次安装可能需要允许当前下载来源安装应用，后续更新需保留相同应用标识和签名。iPhone 目前没有签名 IPA 或 App Store 上架版本。

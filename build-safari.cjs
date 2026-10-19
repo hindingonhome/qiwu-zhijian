@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path');
-const root=__dirname,native=process.argv.includes('--native');
+const root=__dirname,native=process.argv.includes('--native'),desktop=process.argv.includes('--desktop');
 async function build(){
  let app=fs.readFileSync(path.join(root,'app.mjs'),'utf8');
  if(!app.includes('const $=id=>')||!app.includes('export {viewer};'))throw new Error('App startup markers changed; Safari wrapper must be updated.');
@@ -9,7 +9,7 @@ async function build(){
  const assets=new Map(),{ARTIFACTS}=await import('./artifact-library.mjs');
  for(const item of ARTIFACTS)for(const [file,mime]of [[item.asset,'model/gltf-binary'],[item.thumbnail,'image/png']])if(file)assets.set(file,{file,mime});
  for(const [file,mime]of [['brass/color.jpg','image/jpeg'],['brass/normal.jpg','image/jpeg'],['brass/roughness.jpg','image/jpeg'],['brass/metalness.jpg','image/jpeg'],['friend/orange-gold.png','image/png'],['friend/lacquer.png','image/png'],['friend/lacquer-metalness.png','image/png'],['friend/lacquer-roughness.png','image/png'],['friend/orange-gold.jpg','image/jpeg']])assets.set('./assets/'+file,{file:'./assets/'+file,mime});
- assets.set('./assets/museum.hdr',{file:'./assets/mobile-museum.hdr',mime:'application/octet-stream'});
+ assets.set('./assets/museum.hdr',{file:desktop?'./assets/museum.hdr':'./assets/mobile-museum.hdr',mime:'application/octet-stream'});
  let mobileScript;
  if(native){
   const outputFlag=process.argv.indexOf('--output'),target=path.dirname(path.resolve(outputFlag>=0?process.argv[outputFlag+1]:'mobile-web/index.html'));
@@ -33,11 +33,12 @@ async function build(){
  html=html.replace('</head>',()=>'<script>'+fs.readFileSync(path.join(root,'offline-boot.js'),'utf8')+'</script></head>');
  const help='<aside id="offline-startup-help" hidden role="alert" style="position:fixed;z-index:9999;left:16px;right:16px;bottom:20px;padding:18px;border-radius:16px;background:#fff;color:#222;box-shadow:0 4px 32px #0003;font:14px/1.7 system-ui"></aside><noscript><style>#loading{display:none!important}</style><aside style="position:fixed;z-index:9999;inset:25% 16px auto;padding:24px;background:white;color:#222;border:1px solid #bbb;font:16px/1.8 system-ui">当前打开方式未运行 JavaScript，因此无法显示三维器物。请使用支持 JavaScript 和 WebGL 的浏览器打开这个本地 HTML 文件。微信或“文件”的预览可能仅显示静态页面；请使用“在浏览器中打开”，若没有此项，将同一文件转到支持本地 HTML 的浏览器。无需联网或部署。</aside></noscript>';
  html=html.replace('</body>',help+'</body>');
- html=html.replace('<title>器物之间 · 数字博物馆</title>','<title>器物之间 · Safari 离线器物工作室</title>').replace('href="./"','href="#gallery"');
+ html=html.replace('<title>物派 · 数字博物馆</title>',desktop?'<title>物派</title>':'<title>物派 · Safari 离线器物工作室</title>').replace('href="./"','href="#gallery"');
  html=html.replace('href="README.md" target="_blank"','download="使用与资源说明.txt" href="data:text/plain;charset=utf-8;base64,'+Buffer.from(fs.readFileSync(path.join(root,'PRODUCT_README.md'),'utf8')).toString('base64')+'"');
- html=html.replace('<div class="view-hint" aria-label="操作说明"><span>左键转器物</span><span>右键转灯光</span><span>滚轮缩放</span></div>','<div class="view-hint" aria-label="触屏操作说明"><span>单指转器物</span><span>双指缩放</span></div>');
- html=html.replace('<p>左键转器物 · 右键转灯光 · 滚轮缩放</p>','').replace('触屏：单指转动，双指缩放。','单指拖动旋转器物，双指捏合缩放。').replace('三维器物，左键旋转器物，右键旋转灯光，滚轮缩放','三维器物，单指旋转，双指缩放');
- const index=process.argv.indexOf('--output'),output=index>=0?path.resolve(process.argv[index+1]):path.join(root,'器物之间-Safari离线版.html');
+ if(!desktop)html=html.replace('<div class="view-hint" aria-label="操作说明"><span>左键转器物</span><span>右键转灯光</span><span>滚轮缩放</span></div>','<div class="view-hint" aria-label="触屏操作说明"><span>单指转器物</span><span>双指缩放</span></div>');
+ if(!desktop)html=html.replace('<p>左键转器物 · 右键转灯光 · 滚轮缩放</p>','').replace('触屏：单指转动，双指缩放。','单指拖动旋转器物，双指捏合缩放。').replace('三维器物，左键旋转器物，右键旋转灯光，滚轮缩放','三维器物，单指旋转，双指缩放');
+ html=require('./scripts/inline-branding.cjs')(html,root);
+ const index=process.argv.indexOf('--output'),output=index>=0?path.resolve(process.argv[index+1]):path.join(root,'物派-Safari离线版.html');
  fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,html);console.log(output+'\n'+(Buffer.byteLength(html)/1024/1024).toFixed(1)+' MB');
 }
 build().catch(error=>{console.error(error);process.exitCode=1;});

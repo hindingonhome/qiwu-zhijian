@@ -8,9 +8,9 @@ if(!/^\d+\.\d+\.\d+$/.test(version))throw Error('Invalid version');
 for(const file of ['build-offline.cjs','build-safari.cjs']){const result=spawnSync(process.execPath,[file],{stdio:'inherit'});if(result.status!==0)process.exit(result.status||1);}
 const dist=path.resolve('.release-work');if(path.dirname(dist)!==process.cwd())throw Error('Unexpected release directory');
 await rm(dist,{recursive:true,force:true});await mkdir(dist,{recursive:true});
-await copyFile('器物之间-离线版.html',`.release-work/QiwuZhijian-${version}-Desktop-Offline.html`);
-const mobile=await readFile('器物之间-Safari离线版.html','utf8');
-for(const [label,name]of [['安卓','Android'],['苹果','iPhone']])await writeFile(`.release-work/QiwuZhijian-${version}-${name}-Offline.html`,mobile.replace('Safari 离线器物工作室</title>',label+'触屏器物工作室</title>'));
+await copyFile('物派-离线版.html',`.release-work/Wupai-${version}-Desktop-Offline.html`);
+const mobile=await readFile('物派-Safari离线版.html','utf8');
+for(const [label,name]of [['安卓','Android'],['苹果','iPhone']])await writeFile(`.release-work/Wupai-${version}-${name}-Offline.html`,mobile.replace('Safari 离线器物工作室</title>',label+'触屏器物工作室</title>'));
 await copyFile('docs/IPHONE-OPENING.txt','.release-work/iPhone-Opening-Guide.txt');
 await copyFile('docs/ADDING-SERIES.md','.release-work/Adding-Series.md');
 await copyFile('PRODUCT_README.md','.release-work/User-Guide.md');

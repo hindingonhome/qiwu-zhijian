@@ -15,7 +15,8 @@ html=html.replace(/<script>if\(location.protocol==='file:'\)[\s\S]*?<\/script>/,
 html=html.replace('<script type="module" src="app.mjs"></script>','<script type="module">import "offline/app.mjs";</script>');
 html=html.replace('href="./"','href="#gallery"');
 html=html.replace('href="README.md" target="_blank"','download="使用与资源说明.txt" href="data:text/plain;charset=utf-8;base64,'+Buffer.from(fs.readFileSync(path.join(root,'PRODUCT_README.md'),'utf8')).toString('base64')+'"');
-html=html.replace('<title>器物之间 · 数字博物馆</title>','<title>器物之间 · 离线器物工作室</title>');
-const output=path.join(root,'器物之间-离线版.html');fs.writeFileSync(output,html);console.log(output+'\n'+(Buffer.byteLength(html)/1024/1024).toFixed(1)+' MB / '+visited.size+' embedded modules');
+html=html.replace('<title>物派 · 数字博物馆</title>','<title>物派 · 离线器物工作室</title>');
+html=require('./scripts/inline-branding.cjs')(html,root);
+const output=path.join(root,'物派-离线版.html');fs.writeFileSync(output,html);console.log(output+'\n'+(Buffer.byteLength(html)/1024/1024).toFixed(1)+' MB / '+visited.size+' embedded modules');
 }
 build().catch(error=>{console.error(error);process.exitCode=1;});

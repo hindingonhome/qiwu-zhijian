@@ -3,9 +3,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/qiwu_icon"
+        android:icon="@drawable/wupai_icon"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/qiwu_icon"
+        android:roundIcon="@drawable/wupai_icon"
         android:hardwareAccelerated="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">

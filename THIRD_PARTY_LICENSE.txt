@@ -11,3 +11,6 @@ Resource notes: assets/ASSET_LICENSES.md.
 Meshes, original patterns and HDR are user-supplied project resources.
 This notice grants no additional redistribution rights for those resources.
 No system font files are redistributed.
+
+GenSen Rounded 2 TW Bold — SIL Open Font License 1.1. Icon and wordmark use outlined glyphs. Full license: licenses/GenSen-OFL.txt.
+Electron 44.9.0 — MIT. Full license: licenses/Electron-LICENSE.txt. Desktop runtime includes its own third-party notices.

@@ -43,6 +43,7 @@ main{height:calc(100dvh - var(--navheight));min-height:420px}.exhibition,.stage{
 .lighting-controls{margin:28px 0;padding-top:22px;border-top:1px solid var(--line)}.lighting-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.lighting-heading h3{font-size:17px;font-weight:500;margin:0}.lighting-heading>div{display:flex;gap:8px;flex-wrap:wrap}.lighting-heading button{min-height:44px;padding:9px 16px;border:1px solid var(--line);border-radius:22px;background:var(--soft);display:flex;align-items:center;justify-content:center;text-align:center}.lighting-heading button:hover{background:var(--hover);color:var(--blue)}.lighting-sliders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 36px;margin-top:22px}.lighting-sliders .slider-label{margin:0}@media(max-width:700px){.lighting-sliders{grid-template-columns:1fr;gap:16px}.lighting-heading{align-items:flex-start}.lighting-heading button{font-size:14px}}
 
 .collection-item.pending{background:var(--selected);box-shadow:inset 0 0 0 1px var(--line)}
+.brand-wordmark{display:block;width:72px;height:30px;object-fit:contain;flex:none}:root:not([data-theme=light]) .brand-wordmark{filter:brightness(0) invert(1)}
 
 /* Mobile surfaces share the same rounded glass language as the console. */
 @media(max-width:700px){

@@ -31,7 +31,7 @@ async function importTexture(file){
  if(!/\.(png|jpe?g|webp)$/i.test(file.name)){status('请选择 PNG、JPG 或 WebP 图片。',true);return;}if(file.size>30*1024*1024){status('图片超过 30 MB，请压缩后导入。',true);return;}
  const url=URL.createObjectURL(file);try{const img=new Image();img.src=url;await img.decode();if(token!==textureToken)return;if(img.width*img.height>80e6)throw new Error('图片像素过大，请缩小至 8192×8192 以内');activeSurface='custom:'+file.name+':'+file.size;source=processedCanvas(img,0);rememberFile(textureFiles,file,'texture-library',importTexture);$('texture-name').textContent=`${file.name} · ${img.width} × ${img.height} / ${source.width} × ${source.height}`;applyImage();restoreDensity();}catch(e){status('图片读取失败：'+e.message,true);}finally{URL.revokeObjectURL(url);$('texture-file').value='';}
 }
-async function download(url,name){if(globalThis.QIWU_NATIVE_DOWNLOAD)return globalThis.QIWU_NATIVE_DOWNLOAD(url,name);const a=document.createElement('a');a.href=url;a.download=name;a.click();}
+async function download(url,name){if(globalThis.wupaiDesktop)return globalThis.wupaiDesktop.download(url,name);if(globalThis.QIWU_NATIVE_DOWNLOAD)return globalThis.QIWU_NATIVE_DOWNLOAD(url,name);const a=document.createElement('a');a.href=url;a.download=name;a.click();}
 try{viewer=new GalleryViewer($('viewport'),status);}catch(e){loading(false);$('loading').textContent='无法创建三维预览，请开启浏览器硬件加速。';loading(true);status('WebGL 初始化失败：'+e.message,true);throw e;}
 initLightingControls(viewer);
 const drawers={model:['story-panel','about-toggle'],lab:['workbench','lab-toggle'],fruit:['fruit-panel','fruit-toggle'],view:['view-panel','view-toggle']};
@@ -97,7 +97,7 @@ function syncPlayback(){const on=!!viewer.autoSpin;$('rotate').setAttribute('ari
 function togglePlayback(){viewer.autoSpin=!viewer.autoSpin;viewer.dirty=true;syncPlayback();}
 $('rotate').onclick=$('playback-toggle').onclick=togglePlayback;window.addEventListener('spinchange',syncPlayback);$('spin-speed').oninput=()=>{viewer.autoSpinSpeed=Number($('spin-speed').value);};$('reset').onclick=()=>viewer.reset();
 initExportMenu({viewer,getKind:()=>kind,download,status});
-$('export-texture').onclick=async()=>{if(result)try{const saved=await download(result.toDataURL('image/png'),'器物之间-应用纹理.png');status(saved?.cancelled?'已取消保存。':'已导出应用纹理；密度、旋转和偏移属于展示参数，不烘焙进图片。');}catch(error){status('纹理导出失败：'+error.message,true);}};
+$('export-texture').onclick=async()=>{if(result)try{const saved=await download(result.toDataURL('image/png'),'物派-应用纹理.png');status(saved?.cancelled?'已取消保存。':'已导出应用纹理；密度、旋转和偏移属于展示参数，不烘焙进图片。');}catch(error){status('纹理导出失败：'+error.message,true);}};
 if(location.protocol==='file:'&&!globalThis.MUSEUM_ASSETS)status('请使用“启动展览.cmd”，通过本地服务打开。',true);
 await selectArtifact('vase');
 await friendTexture('png');

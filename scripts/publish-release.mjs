@@ -16,8 +16,8 @@ async function api(method,url,data,binary=false){
 }
 const releases=await api('GET','/releases?per_page=100');let release=releases.find(r=>r.tag_name===tag);
 if(release&&!release.draft){console.log(tag+' already exists; tested build remains in workflow artifacts.');process.exit(0);}
-let notes;try{notes=await readFile(`docs/releases/${tag}.md`,'utf8');}catch{notes=`器物之间 ${tag}\n\nCHAMBER · 97101yy@gmail.com\n保留所有权利。`;}
-if(!release)release=await api('POST','/releases',{tag_name:tag,target_commitish:process.env.GITHUB_SHA,name:'器物之间 '+tag,body:notes,draft:true});
+let notes;try{notes=await readFile(`docs/releases/${tag}.md`,'utf8');}catch{notes=`物派 ${tag}\n\nCHAMBER · 97101yy@gmail.com\n保留所有权利。`;}
+if(!release)release=await api('POST','/releases',{tag_name:tag,target_commitish:process.env.GITHUB_SHA,name:'物派 '+tag,body:notes,draft:true});
 const assets=await api('GET',`/releases/${release.id}/assets?per_page=100`),expected=[];
 for(const name of (await readdir('dist')).sort()){
  if(!/^[A-Za-z0-9_.-]+$/.test(name))throw Error('Release filename must be ASCII: '+name);

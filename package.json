@@ -1,9 +1,9 @@
 {
-  "name": "qiwu-zhijian",
-  "version": "1.0.1",
+  "name": "wupai",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "器物之间 · 离线三维器物、纹样与铜漆材质工作室",
+  "description": "物派 · 离线三维器物、纹样与铜漆材质工作室",
   "author": "CHAMBER <97101yy@gmail.com>",
   "license": "UNLICENSED",
   "engines": {
@@ -11,12 +11,15 @@
   },
   "scripts": {
     "start": "node server.cjs",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test tests/*.test.mjs tests/desktop-*.test.cjs",
     "test:browser": "node scripts/test-browser.mjs",
     "build": "node scripts/build-release.mjs",
     "mobile:prepare": "node build-safari.cjs --native --output mobile-web/index.html",
     "mobile:sync": "npm run mobile:prepare && cap sync android",
-    "package:platforms": "node scripts/package-platforms.mjs"
+    "package:platforms": "node scripts/package-platforms.mjs",
+    "desktop:prepare": "node scripts/prepare-desktop.mjs",
+    "desktop:build": "electron-builder --config desktop/electron-builder.cjs",
+    "test:desktop": "node tests/desktop-smoke.cjs"
   },
   "dependencies": {
     "@capacitor/core": "8.5.2",
@@ -25,8 +28,12 @@
   "devDependencies": {
     "@capacitor/android": "8.5.2",
     "@capacitor/cli": "8.5.2",
+    "electron": "44.9.0",
+    "electron-builder": "26.15.3",
     "esbuild": "0.25.11",
     "playwright": "1.62.1",
     "yazl": "3.3.1"
-  }
+  },
+  "productName": "物派",
+  "main": "desktop/main.cjs"
 }

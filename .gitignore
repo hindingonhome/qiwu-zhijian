@@ -2,6 +2,10 @@ node_modules/
 dist/
 .release-work/
 mobile-web/
+desktop-web/
+desktop-output/
+物派-离线版.html
+物派-Safari离线版.html
 verification/
 .safari-entry-*
 器物之间-离线版.html

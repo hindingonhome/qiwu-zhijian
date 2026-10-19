@@ -10,10 +10,10 @@ if(models.length!==25)throw Error('Expected 25 native iPhone models');
 const output=path.resolve('dist');if(path.dirname(output)!==process.cwd())throw Error('Unexpected package directory');
 await rm(output,{recursive:true,force:true});await mkdir(output,{recursive:true});
 for(const [platform,files]of Object.entries(platformFiles(version,models))){
- const zip=new yazl.ZipFile(),prefix=`QiwuZhijian-${version}-${platform}/`;
+ const zip=new yazl.ZipFile(),prefix=`Wupai-${version}-${platform}/`;
  zip.on('error',error=>zip.outputStream.destroy(error));
- for(const file of files)zip.addFile(file.source,prefix+file.name,{mode:file.mode||0o100644,compress:!file.name.endsWith('.usdz')&&!file.name.endsWith('.apk')});
- zip.end();await pipeline(zip.outputStream,createWriteStream(`dist/QiwuZhijian-${version}-${platform}.zip`));
+ for(const file of files)zip.addFile(file.source,prefix+file.name,{mode:file.mode||0o100644,compress:!['.usdz','.apk','.exe','.AppImage'].some(ext=>file.name.endsWith(ext))});
+ zip.end();await pipeline(zip.outputStream,createWriteStream(`dist/Wupai-${version}-${platform}.zip`));
  console.log(platform,'package:',files.length,'files');
 }
-await copyFile(`.release-work/QiwuZhijian-${version}-Android.apk`,`dist/QiwuZhijian-${version}-Android.apk`);
+await copyFile(`.release-work/Wupai-${version}-Android.apk`,`dist/Wupai-${version}-Android.apk`);

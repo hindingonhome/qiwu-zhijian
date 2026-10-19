@@ -1,6 +1,6 @@
 {
   "appId": "cn.chamber.qiwuzhijian",
-  "appName": "器物之间",
+  "appName": "物派",
   "webDir": "mobile-web",
   "server": {
     "androidScheme": "https"

@@ -25,7 +25,7 @@ public class FileExportPlugin extends Plugin {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(call.getString("mime", "application/octet-stream"));
-        intent.putExtra(Intent.EXTRA_TITLE, call.getString("name", "器物之间-export"));
+        intent.putExtra(Intent.EXTRA_TITLE, call.getString("name", "物派-export"));
         startActivityForResult(call, intent, "exportResult");
     }
 

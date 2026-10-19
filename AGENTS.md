@@ -1,6 +1,6 @@
 # 界面偏好
 
-- 独立开发项目为本目录，GitHub 仓库 hindingonhome/qiwu-zhijian；不要回写其他项目。
+- 独立开发项目为本目录，GitHub 仓库 hindingonhome/wupai；不要回写其他项目。
 - 开发者 CHAMBER，联系邮箱 97101yy@gmail.com，保留所有权利，不添加开源许可证。
 - 发布同时提供正式签名安卓 APK、安卓离线 HTML、iPhone 离线 HTML；完整构建命令见 docs/RELEASING.md。
 - 新版发布附件按 Desktop、Android、iPhone、Linux 四个平台 ZIP 归档，另提供直接安装 APK 与 SHA256SUMS.txt，共六项；模型归入 iPhone 包 Models 文件夹。每个包包含 CHANGELOG.md。
@@ -25,3 +25,5 @@
 - 水果着色程序共用 uniform 调色板，色彩、密度、香蕉内侧开关不得写入程序缓存键而导致逐模型重新编译；新增纹样沿用此约定。
 
 - 用户最新要求覆盖此前实时缩略图规则：菜单缩略图固定为每件水果第三个材质（纯铜、金色之后的第一个彩色纹样）；桃子用唯一保留的落地色。换纹样、调密度、导入本地纹理均不得改变缩略图。运行网页不得生成缩略图；静态图片只在构建准备阶段制作。密度仍分别记忆。
+
+- 品牌为物派：使用 assets/branding 中已放大的源泉圆体轮廓，不依赖系统字体。Windows 提供便携 EXE，Linux 提供 AppImage，HTML 是备选；Android 保留原应用 ID 与签名，iPhone 保留网页和模型包。

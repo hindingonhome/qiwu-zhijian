@@ -63,7 +63,7 @@ export async function exportCurrentModel(viewer){
    // GPU-only source attributes are baked into ordinary UV maps above.
    for(const name of Object.keys(geometry.attributes))if(!['position','normal','uv','uv1','color','tangent','skinIndex','skinWeight'].includes(name))geometry.deleteAttribute(name);
   });
-  exportRoot.name='器物之间-'+viewer.currentKind;
+  exportRoot.name='物派-'+viewer.currentKind;
   exportRoot.updateMatrixWorld(true);
   renderer.setRenderTarget(oldTarget);renderer.setClearColor(oldColor,oldAlpha);viewer.dirty=true;
   return await new GLTFExporter().parseAsync(exportRoot,{binary:true,onlyVisible:true,maxTextureSize:4096});
