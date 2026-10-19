@@ -3,6 +3,8 @@
 *.js text eol=lf
 *.gradle text eol=lf
 *.yml text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
 *.md text eol=lf
 android/gradlew text eol=lf
 *.glb binary

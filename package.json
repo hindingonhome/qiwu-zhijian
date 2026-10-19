@@ -1,6 +1,6 @@
 {
   "name": "qiwu-zhijian",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "description": "器物之间 · 离线三维器物、纹样与铜漆材质工作室",
@@ -15,16 +15,18 @@
     "test:browser": "node scripts/test-browser.mjs",
     "build": "node scripts/build-release.mjs",
     "mobile:prepare": "node build-safari.cjs --native --output mobile-web/index.html",
-    "mobile:sync": "npm run mobile:prepare && cap sync android"
+    "mobile:sync": "npm run mobile:prepare && cap sync android",
+    "package:platforms": "node scripts/package-platforms.mjs"
   },
   "dependencies": {
-    "three": "0.180.0",
-    "@capacitor/core": "8.5.2"
+    "@capacitor/core": "8.5.2",
+    "three": "0.180.0"
   },
   "devDependencies": {
     "@capacitor/android": "8.5.2",
     "@capacitor/cli": "8.5.2",
     "esbuild": "0.25.11",
-    "playwright": "1.62.1"
+    "playwright": "1.62.1",
+    "yazl": "3.3.1"
   }
 }

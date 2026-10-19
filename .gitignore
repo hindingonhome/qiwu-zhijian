@@ -1,5 +1,6 @@
 node_modules/
 dist/
+.release-work/
 mobile-web/
 verification/
 .safari-entry-*

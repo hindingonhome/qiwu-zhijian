@@ -10,7 +10,7 @@
 
 1. 修改源码、资源或固定缩略图，运行 `npm test`、`npm run build` 和浏览器检查。
 2. 更新 package.json 三段版本号，例如 1.0.1，并在 docs/releases/V1.0.1.md 写变更说明。
-3. 提交并推送 main。GitHub Actions 检查版本是否已发布；不存在时构建网页、安卓 APK、USDZ 附件及校验表，并发布对应 V 标签。
+3. 同时更新 CHANGELOG.md。提交并推送 main，GitHub Actions 构建四个平台 ZIP、直接安装的安卓 APK 与校验表，共六项，并发布对应 V 标签。
 4. 检查 Actions 成功以及 Releases 附件。已发布版本不会自动覆盖，通常应递增版本号。
 
 ## 安卓签名
@@ -25,7 +25,9 @@
 
 ## 项目维护
 
-桌面和手机网页内嵌资源。APK 使用包内拆分资源，避免解析巨大的内嵌网页。release-assets/native-usdz 为 iPhone 原生查看资源，不含网页交互。
+桌面和手机网页内嵌资源。APK 使用包内拆分资源，避免解析巨大的内嵌网页。release-assets/native-usdz 为 iPhone 原生查看资源，不含网页交互；这些模型统一归入 iPhone ZIP 的 Models 文件夹，不再单独上传。
+
+`npm run build -- --native` 在 `.release-work` 准备网页与模型。签名 APK 也放入该目录，再运行 `npm run package:platforms` 和 `node scripts/checksums.mjs`。`dist` 只包含四个平台 ZIP、直接 APK、SHA256SUMS.txt；每个平台包带有独立说明、通用操作指南和 CHANGELOG.md。Linux 包含离线网页及可执行 Launch.sh，不是 AppImage/deb。
 
 固定缩略图放在 assets/thumbs，不恢复实时重绘。水果着色程序共用 uniform 调色板，避免不同水果反复编译。新增系列仍检查 UV、露铜遮罩、完整缩略图和居中图标，遵循 AGENTS.md。
 

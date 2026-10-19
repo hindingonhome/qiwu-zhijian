@@ -52,9 +52,11 @@ jobs:
       - name: Assemble verified downloads
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          cp android/app/build/outputs/apk/release/app-release.apk "dist/QiwuZhijian-${VERSION}-Android.apk"
-          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "dist/QiwuZhijian-${VERSION}-Android.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk ".release-work/QiwuZhijian-${VERSION}-Android.apk"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose ".release-work/QiwuZhijian-${VERSION}-Android.apk"
+          npm run package:platforms
           node scripts/checksums.mjs
+          python3 scripts/verify-platforms.py
       - uses: actions/upload-artifact@v4
         with:
           name: qiwu-zhijian-release

@@ -3,6 +3,8 @@
 - 独立开发项目为本目录，GitHub 仓库 hindingonhome/qiwu-zhijian；不要回写其他项目。
 - 开发者 CHAMBER，联系邮箱 97101yy@gmail.com，保留所有权利，不添加开源许可证。
 - 发布同时提供正式签名安卓 APK、安卓离线 HTML、iPhone 离线 HTML；完整构建命令见 docs/RELEASING.md。
+- 新版发布附件按 Desktop、Android、iPhone、Linux 四个平台 ZIP 归档，另提供直接安装 APK 与 SHA256SUMS.txt，共六项；模型归入 iPhone 包 Models 文件夹。每个包包含 CHANGELOG.md。
+- 手机端保持圆角磨砂浮层、统一卡片与控件圆角、居中图标及文字；不增加额外的全屏模糊以免影响切换流畅度。
 - 签名私钥与密码只存在私密配置目录和 GitHub Secrets，禁止提交。版本以 package.json 为准。
 
 - 用户明确要求：今后所有界面都不要出现箭头图标或箭头字符，包括按钮、链接和提示中的箭头。使用清晰的文字标签。
