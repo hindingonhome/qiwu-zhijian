@@ -1,16 +1,9 @@
-import {readdir,readFile,stat} from 'node:fs/promises';
-import {createHash} from 'node:crypto';
-import {execFileSync} from 'node:child_process';
-const {version}=JSON.parse(await readFile('package.json','utf8'));
-const repo=process.env.GITHUB_REPOSITORY;if(!repo)throw Error('GITHUB_REPOSITORY is required');
-const releases=JSON.parse(execFileSync('gh',['api',`repos/${repo}/releases?per_page=100`],{encoding:'utf8'}));
-const release=releases.find(r=>r.tag_name===`V${version}`);if(!release)throw Error('Release draft was not found');
-const assets=JSON.parse(execFileSync('gh',['api',`repos/${repo}/releases/${release.id}/assets?per_page=100`],{encoding:'utf8'}));
-const files=await readdir('dist');if(assets.length!==files.length)throw Error(`Release asset count mismatch: ${assets.length} / ${files.length}`);
-for(const name of files){
- const asset=assets.find(a=>a.name===name),size=(await stat('dist/'+name)).size;
- if(!asset||asset.size!==size||asset.state!=='uploaded')throw Error('Missing or changed release asset: '+name);
- const digest='sha256:'+createHash('sha256').update(await readFile('dist/'+name)).digest('hex');
- if(asset.digest!==digest)throw Error('Release digest mismatch: '+name);
+export function verifyAssets(expected,actual){
+ if(actual.length!==expected.length)throw Error(`Release asset count mismatch: ${actual.length} / ${expected.length}`);
+ const names=new Set();
+ for(const file of expected){
+  if(names.has(file.name))throw Error('Duplicate expected asset: '+file.name);names.add(file.name);
+  const asset=actual.find(a=>a.name===file.name);
+  if(!asset||asset.size!==file.size||asset.state!=='uploaded'||asset.digest!==file.digest)throw Error('Missing or changed release asset: '+file.name);
+ }
 }
-console.log('All release names, sizes and SHA256 digests verified:',files.length);
