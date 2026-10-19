@@ -85,6 +85,7 @@ jobs:
               done
               test "$UPLOADED" = 1
             done
+            node scripts/verify-release.mjs
             gh release edit "V$VERSION" --draft=false --latest --notes-file "$NOTES"
           fi
       - name: Remove signing key
