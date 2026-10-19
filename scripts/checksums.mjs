@@ -1,0 +1,2 @@
+import {readdir,readFile,writeFile} from 'node:fs/promises';import {createHash} from 'node:crypto';
+const files=(await readdir('dist')).filter(name=>name!=='SHA256SUMS.txt').sort();const lines=[];for(const file of files)lines.push(createHash('sha256').update(await readFile('dist/'+file)).digest('hex')+'  '+file);await writeFile('dist/SHA256SUMS.txt',lines.join('\n')+'\n');console.log('SHA256 checksums',files.length);

@@ -1,0 +1,76 @@
+name: Verify and release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+      - run: npm ci
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - run: npm run build -- --native
+      - run: node tests/offline-export-check.cjs
+      - run: npm run mobile:sync
+      - name: Restore private signing key
+        env:
+          SIGNING_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          test -n "$SIGNING_KEY"
+          printf '%s' "$SIGNING_KEY" | base64 --decode > "$RUNNER_TEMP/qiwu-release.jks"
+          chmod 600 "$RUNNER_TEMP/qiwu-release.jks"
+      - name: Build signed Android app
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/qiwu-release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: ./gradlew assembleRelease --no-daemon --console=plain
+      - name: Assemble verified downloads
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          cp android/app/build/outputs/apk/release/app-release.apk "dist/QiwuZhijian-${VERSION}-Android.apk"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "dist/QiwuZhijian-${VERSION}-Android.apk"
+          node scripts/checksums.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qiwu-zhijian-release
+          path: dist/*
+          retention-days: 14
+      - name: Publish a new version only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if gh release view "V$VERSION" >/dev/null 2>&1; then
+            echo "V$VERSION already exists; tested build is available as a workflow artifact."
+          else
+            NOTES="docs/releases/V$VERSION.md"
+            if [ ! -f "$NOTES" ]; then
+              printf '器物之间 V%s\n\nCHAMBER · 97101yy@gmail.com\n保留所有权利。\n' "$VERSION" > "$RUNNER_TEMP/release-notes.md"
+              NOTES="$RUNNER_TEMP/release-notes.md"
+            fi
+            gh release create "V$VERSION" dist/* --target "$GITHUB_SHA" --title "器物之间 V$VERSION" --notes-file "$NOTES" --latest
+          fi
+      - name: Remove signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/qiwu-release.jks"

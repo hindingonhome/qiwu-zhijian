@@ -1,0 +1,11 @@
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.js text eol=lf
+*.gradle text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+android/gradlew text eol=lf
+*.glb binary
+*.usdz binary
+*.hdr binary
+vendor/** -whitespace

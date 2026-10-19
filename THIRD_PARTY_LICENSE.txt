@@ -1,0 +1,13 @@
+Three.js 0.180.0 — MIT. Full license: vendor/package/LICENSE.
+Capacitor 8.5.2 — MIT, Ionic Team. Full license: licenses/Capacitor-LICENSE.
+esbuild 0.25.11 — MIT, build tool.
+Playwright 1.62.1 — Apache-2.0, test tool.
+Dependency versions and declared licenses: package-lock.json.
+
+Brass PBR: Brass by Share Textures, CC0.
+https://cc0-textures.com/t/st-brass
+Resource notes: assets/ASSET_LICENSES.md.
+
+Meshes, original patterns and HDR are user-supplied project resources.
+This notice grants no additional redistribution rights for those resources.
+No system font files are redistributed.
