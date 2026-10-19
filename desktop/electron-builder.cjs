@@ -6,5 +6,5 @@ module.exports = {
   asar: true,
   win: { target: ['portable'], icon: 'assets/branding/icon.ico', artifactName: 'Wupai-${version}-Windows.exe' },
   portable: { requestExecutionLevel: 'user' },
-  linux: { target: ['AppImage'], icon: 'assets/branding/icon.png', category: 'Graphics', executableName: 'wupai', artifactName: 'Wupai-${version}-Linux.AppImage' },
+  linux: { syncDesktopName: true, target: ['AppImage'], icon: 'assets/branding/icon.png', category: 'Graphics', executableName: 'wupai', artifactName: 'Wupai-${version}-Linux.AppImage' },
 };

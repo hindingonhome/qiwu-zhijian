@@ -18,7 +18,7 @@
     "mobile:sync": "npm run mobile:prepare && cap sync android",
     "package:platforms": "node scripts/package-platforms.mjs",
     "desktop:prepare": "node scripts/prepare-desktop.mjs",
-    "desktop:build": "electron-builder --config desktop/electron-builder.cjs",
+    "desktop:build": "electron-builder --config desktop/electron-builder.cjs --publish never",
     "test:desktop": "node tests/desktop-smoke.cjs"
   },
   "dependencies": {
@@ -35,5 +35,6 @@
     "yazl": "3.3.1"
   },
   "productName": "物派",
-  "main": "desktop/main.cjs"
+  "main": "desktop/main.cjs",
+  "desktopName": "wupai.desktop"
 }
