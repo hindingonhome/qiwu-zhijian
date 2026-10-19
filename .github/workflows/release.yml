@@ -65,7 +65,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          if gh release view "V$VERSION" >/dev/null 2>&1; then
+          STATE=$(gh release view "V$VERSION" --json isDraft --jq '.isDraft' 2>/dev/null || echo missing)
+          if [ "$STATE" = false ]; then
             echo "V$VERSION already exists; tested build is available as a workflow artifact."
           else
             NOTES="docs/releases/V$VERSION.md"
@@ -73,7 +74,18 @@ jobs:
               printf '器物之间 V%s\n\nCHAMBER · 97101yy@gmail.com\n保留所有权利。\n' "$VERSION" > "$RUNNER_TEMP/release-notes.md"
               NOTES="$RUNNER_TEMP/release-notes.md"
             fi
-            gh release create "V$VERSION" dist/* --target "$GITHUB_SHA" --title "器物之间 V$VERSION" --notes-file "$NOTES" --latest
+            if [ "$STATE" = missing ]; then
+              gh release create "V$VERSION" --target "$GITHUB_SHA" --title "器物之间 V$VERSION" --notes-file "$NOTES" --draft
+            fi
+            for FILE in dist/*; do
+              UPLOADED=0
+              for ATTEMPT in 1 2 3; do
+                if gh release upload "V$VERSION" "$FILE" --clobber; then UPLOADED=1; break; fi
+                sleep 3
+              done
+              test "$UPLOADED" = 1
+            done
+            gh release edit "V$VERSION" --draft=false --latest --notes-file "$NOTES"
           fi
       - name: Remove signing key
         if: always()
