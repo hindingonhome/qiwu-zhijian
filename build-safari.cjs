@@ -26,8 +26,8 @@ async function build(){
  }
  let html=fs.readFileSync(path.join(root,'index.html'),'utf8');
  // Use iOS system Chinese fonts instead of embedding the 16 MB desktop font.
- const css=fs.readFileSync(path.join(root,'product.css'),'utf8').replace(/@font-face\s*\{[^}]*\}/g,'');
- html=html.replace('<link rel="stylesheet" href="product.css">',()=>'<style>'+css+'</style>');
+ const css=(fs.readFileSync(path.join(root,'product.css'),'utf8')+'\n'+fs.readFileSync(path.join(root,'responsive.css'),'utf8')).replace(/@font-face\s*\{[^}]*\}/g,'');
+ html=html.replace('<link rel="stylesheet" href="product.css">',()=>'<style>'+css+'</style>').replace('<link rel="stylesheet" href="responsive.css">','');
  html=html.replace(/<script type="importmap">[\s\S]*?<\/script>/,'');
  html=html.replace(/<script>if\(location.protocol==='file:'\)[\s\S]*?<\/script>/,'');
  html=html.replace('<script type="module" src="app.mjs"></script>',()=>mobileScript);

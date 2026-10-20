@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {safeViewport,fitDistance} from '../layout.mjs';
+test('scene area follows measured title and controls and remains usable on short windows',()=>{const large=safeViewport({height:1340,titleBottom:190,controlsTop:1150});assert.ok(large.top>=220);assert.ok(large.bottom>=220);assert.ok(large.height>800);const short=safeViewport({height:420,titleBottom:120,controlsTop:260});assert.ok(short.height>=160);assert.ok(short.top>=0&&short.bottom>=0);assert.equal(short.top+short.height+short.bottom,420);});
+
+test('initial framing fits object bounds and makes room for narrow windows',()=>{const shape={width:1.1,height:1.8,depth:.7};const wide=fitDistance({...shape,aspect:2,fov:38});const narrow=fitDistance({...shape,aspect:.4,fov:38});assert.ok(wide>2.8&&wide<3.9);assert.ok(narrow>wide);assert.ok(Number.isFinite(fitDistance({...shape,aspect:0,fov:38})));});

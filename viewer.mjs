@@ -1,3 +1,4 @@
+import {safeViewport,fitDistance} from './layout.mjs';
 import {PAINT_FINISH,applyPaintFinish} from './paint-finish.mjs';
 import {exportCurrentModel} from './model-export.mjs';
 import {LIGHT_DEFAULTS} from './lighting.mjs';
@@ -21,7 +22,7 @@ export class GalleryViewer{
   this.renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;this.renderer.toneMapping=THREE.ACESFilmicToneMapping;this.renderer.toneMappingExposure=.95;container.append(this.renderer.domElement);
   this.scene=new THREE.Scene();
   this.camera=new THREE.PerspectiveCamera(38,1,.05,60);this.controls=new OrbitControls(this.camera,this.renderer.domElement);this.controls.enableDamping=false;this.controls.rotateSpeed=.45;this.controls.zoomSpeed=.65;this.controls.enablePan=false;this.controls.minDistance=.75;this.controls.maxDistance=ORBIT_LIMIT;this.controls.minPolarAngle=.24;this.controls.maxPolarAngle=MAX_POLAR;this.controls.autoRotateSpeed=.65;this.dirty=true;this.controls.addEventListener('change',()=>{this.dirty=true;});
-  this.makeLighting();this.setLight();this.reset();this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(container);this.resize();
+  this.makeLighting();this.setLight();this.reset();this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(container);for(const element of container.closest('.stage')?.querySelectorAll('.exhibition-title,.object-controls')||[])this.resizeObserver.observe(element);this.resize();
   this.brass={};const tl=new THREE.TextureLoader();this.brassReady=Promise.all(['color','normal','roughness','metalness'].map(async name=>{const t=await tl.loadAsync(assetURL(`./assets/brass/${name}.jpg`));if(name==='color')t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,2);this.brass[name]=t;})).then(()=>this.updateMaterial()).catch(()=>this.report('黄铜贴图未加载，使用黄铜参数材质。'));
   this.controls.mouseButtons={LEFT:null,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:null};this.bindGestures();
   this.clock=new THREE.Clock();this.renderer.setAnimationLoop(()=>{const dt=Math.min(this.clock.getDelta(),.05);this.controls.update(dt);if(this.switching)return;if(this.autoSpin&&this.spinPivot)this.spinPivot.rotation.y+=dt*(this.autoSpinSpeed??.12);if(this.dirty||this.autoSpin){this.renderer.render(this.scene,this.camera);this.dirty=false;}});
@@ -38,7 +39,7 @@ export class GalleryViewer{
   this.fill=new THREE.DirectionalLight('#e5e9e8',.3);this.fill.position.set(3,3,2);this.lights.add(this.fill);this.rim=new THREE.DirectionalLight('#e5dcc8',.35);this.rim.position.set(-1,3,-2);this.lights.add(this.rim);
   this.softbox=new THREE.RectAreaLight('#fff8ec',3.2,3.5,4);this.softbox.position.set(-3,3.5,4);this.softbox.lookAt(0,1,0);this.lights.add(this.softbox);this.softFill=new THREE.RectAreaLight('#edf2ff',1.6,2.5,3);this.softFill.position.set(3,2,1);this.softFill.lookAt(0,1,0);this.lights.add(this.softFill);this.dirty=true;
  }
- resize(){const w=this.container.clientWidth,h=this.container.clientHeight;if(!w||!h)return;const style=getComputedStyle(this.container),top=parseFloat(style.getPropertyValue('--stage-safe-top'))||110,bottom=parseFloat(style.getPropertyValue('--stage-safe-bottom'))||230,safeHeight=Math.max(160,h-top-bottom);this.camera.setViewOffset(w,safeHeight,0,-top,w,h);this.renderer.setSize(w,h,false);this.dirty=true;}
+ resize(){const w=this.container.clientWidth,h=this.container.clientHeight;if(!w||!h)return;const bounds=this.container.getBoundingClientRect(),stage=this.container.closest('.stage'),title=stage?.querySelector('.exhibition-title')?.getBoundingClientRect(),controls=stage?.querySelector('.object-controls')?.getBoundingClientRect();const area=safeViewport({height:h,titleBottom:title?title.bottom-bounds.top:90,controlsTop:controls?controls.top-bounds.top:h-200});stage?.style.setProperty('--stage-safe-top',area.top+'px');stage?.style.setProperty('--stage-safe-bottom',area.bottom+'px');this.camera.setViewOffset(w,area.height,0,-area.top,w,h);this.renderer.setSize(w,h,false);this.dirty=true;}
  bindGestures(){
   const canvas=this.renderer.domElement;let gesture;const touches=new Set();this.controls.touches.ONE=null;
   canvas.addEventListener('contextmenu',e=>e.preventDefault());
@@ -49,7 +50,7 @@ export class GalleryViewer{
   });
   const end=e=>{touches.delete(e.pointerId);if(gesture?.id===e.pointerId){gesture=null;this.isDragging=false;}if(!touches.size&&!gesture)this.isDragging=false;};canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);canvas.addEventListener('lostpointercapture',end);
  }
- reset(){this.autoSpin=false;window.dispatchEvent(new Event('spinchange'));if(this.spinPivot)this.spinPivot.rotation.set(0,0,0);if(this.artifactPivot)this.artifactPivot.rotation.set(0,0,0);const h=this.root?.userData.height||1.8;this.controls.target.set(0,h/2,0);this.camera.position.set(0,h/2+.14,this.camera.aspect<.7?4.5:3.9);this.controls.update();this.dirty=true;}
+ reset(){this.autoSpin=false;window.dispatchEvent(new Event('spinchange'));if(this.spinPivot)this.spinPivot.rotation.set(0,0,0);if(this.artifactPivot)this.artifactPivot.rotation.set(0,0,0);const h=this.root?.userData.height||1.8;this.controls.target.set(0,h/2,0);const size=this.root?new THREE.Box3().setFromObject(this.spinPivot).getSize(new THREE.Vector3()):new THREE.Vector3(1,1.8,1);const distance=fitDistance({width:size.x,height:size.y,depth:size.z,aspect:this.camera.aspect,fov:this.camera.fov});this.camera.position.set(0,h/2+.14,distance);this.controls.update();this.dirty=true;}
  setTheme(theme){this.theme=theme;this.scene.background=new THREE.Color(theme==='light'?'#f5f5f7':'#101012');this.dirty=true;}
  setLight(){this.updateLighting();}
  updateLighting(values={}){
