@@ -34,6 +34,7 @@ const progress=stage=>{if(process.env.WUPAI_TEST_REPORT)fs.writeFileSync(process
   progress('ready');
   assert.match(await page.title(),/物派/);
   assert.deepEqual(await page.evaluate(()=>[typeof require,typeof process,typeof Buffer,typeof wupaiDesktop.download]),['undefined','undefined','undefined','function']);
+  await page.locator('#help-open').click();await page.getByRole('tab',{name:'使用许可',exact:true}).click();assert.ok((await page.locator('#help-body').innerText()).includes('仅限个人非商业使用'));await page.getByRole('button',{name:'关闭使用说明'}).click();
   for(const id of ['apple','watermelon']){
    await page.evaluate(id=>document.querySelector('[data-kind='+id+']').click(),id);
    await page.waitForFunction(()=>document.querySelector('#loading').hidden);

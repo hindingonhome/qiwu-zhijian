@@ -1,3 +1,4 @@
+import {initHelp} from './help.mjs';
 import {initLightingControls} from './lighting.mjs';
 import {DensityMemory} from './density-memory.mjs';
 import {initExportMenu} from './export-menu.mjs';
@@ -8,6 +9,7 @@ import {initAppearance} from './appearance.mjs';
 import {GalleryViewer} from './viewer.mjs';
 import {processedCanvas,mirroredCanvas} from './texture.mjs';
 import {ARTIFACTS,artifactById} from './artifact-library.mjs';
+initHelp();
 const $=id=>document.getElementById(id),status=(message,error=false)=>{$('status').textContent=message;$('status').classList.toggle('error',error);};
 let storage;try{storage=localStorage;}catch{}const densities=new DensityMemory(storage);
 let viewer,source,result,textureToken=0,hasUV=true,kind='vase',activeSurface='orange';

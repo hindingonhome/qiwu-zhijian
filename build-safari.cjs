@@ -1,3 +1,4 @@
+require('./scripts/prepare-help.cjs');
 const fs=require('node:fs'),path=require('node:path');
 const root=__dirname,native=process.argv.includes('--native'),desktop=process.argv.includes('--desktop');
 async function build(){

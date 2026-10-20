@@ -1,16 +1,25 @@
-Three.js 0.180.0 — MIT. Full license: vendor/package/LICENSE.
-Capacitor 8.5.2 — MIT, Ionic Team. Full license: licenses/Capacitor-LICENSE.
-esbuild 0.25.11 — MIT, build tool.
-Playwright 1.62.1 — Apache-2.0, test tool.
-Dependency versions and declared licenses: package-lock.json.
+Third-party notices / 第三方组件与资源声明
+Updated: 2026-10-20
 
-Brass PBR: Brass by Share Textures, CC0.
-https://cc0-textures.com/t/st-brass
-Resource notes: assets/ASSET_LICENSES.md.
+物派本身采用专有个人非商业许可。下列第三方组件及独立资源保留原许可；本软件许可不缩减其已授予的权利。使用这些组件不等于本软件或内置原创资产采用同样许可。
 
-Meshes, original patterns and HDR are user-supplied project resources.
-This notice grants no additional redistribution rights for those resources.
-No system font files are redistributed.
+Runtime components:
+- Three.js 0.180.0 — MIT. Source/license: https://github.com/mrdoob/three.js ; vendor/package/LICENSE ; ZIP: Licenses/Three.txt.
+- Capacitor 8.5.2 — MIT, Ionic Team. https://github.com/ionic-team/capacitor ; licenses/Capacitor-LICENSE ; ZIP: Licenses/Capacitor.txt.
+- Electron 44.9.0 — MIT. https://github.com/electron/electron ; licenses/Electron-LICENSE.txt ; ZIP: Licenses/Electron.txt. Desktop runtime also includes Electron/Chromium third-party notices inside the application distribution.
 
-GenSen Rounded 2 TW Bold — SIL Open Font License 1.1. Icon and wordmark use outlined glyphs. Full license: licenses/GenSen-OFL.txt.
-Electron 44.9.0 — MIT. Full license: licenses/Electron-LICENSE.txt. Desktop runtime includes its own third-party notices.
+Brand glyphs:
+- GenSen Rounded 2 TW Bold / 源泉圆体 — SIL Open Font License 1.1. https://github.com/ButTaiwan/gensen-font ; licenses/GenSen-OFL.txt ; ZIP: Licenses/GenSen-OFL.txt.
+- Icon and wordmark use outlined glyphs; no system commercial font files are redistributed.
+
+Independent material resource:
+- Brass by Share Textures — CC0. https://cc0-textures.com/t/st-brass . Source records: assets/ASSET_LICENSES.md ; ZIP: Licenses/Assets.md.
+
+Build/test tools (not the software's proprietary code license):
+- esbuild 0.25.11 — MIT. https://github.com/evanw/esbuild .
+- Playwright 1.62.1 — Apache-2.0. https://github.com/microsoft/playwright .
+- electron-builder 26.15.3 — MIT. https://github.com/electron-userland/electron-builder .
+- yazl 3.3.1 — MIT. https://github.com/thejoshwolfe/yazl .
+Exact dependency versions and dependency license metadata are recorded in package-lock.json; dependency packages retain their notices.
+
+User-supplied meshes, original patterns and HDR are restricted project resources; this notice grants no additional commercial or redistribution rights. See LICENSE and docs/COMMERCIAL-LICENSE.md in the repository; LICENSE.txt and Commercial-License.md in platform ZIPs. Third-party independent licenses apply only to the corresponding components/resources, not to all content in a model or exported file.

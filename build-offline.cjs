@@ -1,3 +1,4 @@
+require('./scripts/prepare-help.cjs');
 const fs=require('node:fs'),path=require('node:path');
 async function build(){
 const root=__dirname,imports={},visited=new Set();

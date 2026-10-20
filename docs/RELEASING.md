@@ -32,3 +32,7 @@
 固定缩略图放在 assets/thumbs，不恢复实时重绘。水果着色程序共用 uniform 调色板，避免不同水果反复编译。新增系列仍检查 UV、露铜遮罩、完整缩略图和居中图标，遵循 AGENTS.md。
 
 本项目不包含金属工坊、其他算法网页、旧交付历史、个人申请表或聊天附件。此前“实用软件”中的交付保留为历史，后续以本目录为独立开发位置。
+
+## 正式文档同步
+
+V1.1.1起，PRODUCT_README.md、LICENSE、docs/COMMERCIAL-LICENSE.md、docs/PRIVACY.md及THIRD_PARTY_LICENSE.txt为说明源。执行 `node scripts/prepare-help.cjs` 更新help-content.mjs；两个网页构建器也会自动生成。不要只编辑生成模块。每个平台包包含User-Guide.md、LICENSE.txt、Commercial-License.md、Privacy.md、Support.md及第三方许可。许可修改须取得权利人确认，不追溯改写历史发行包。

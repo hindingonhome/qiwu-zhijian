@@ -1,7 +1,41 @@
+物派专有软件个人非商业使用许可
+版本1.0；生效日期2026-10-20；适用于物派V1.1.1及后续明确采用本许可的版本。
 Copyright (c) 2026 CHAMBER. All rights reserved.
 
-This repository is publicly viewable, but it is not open-source licensed.
-No permission to copy, modify, redistribute, sublicense, or use its source code
-or original artwork is granted without prior written permission from CHAMBER.
+1. 权利人与范围
+本软件中由CHAMBER享有权利的程序、文档、品牌和原创资源均保留所有权利。本仓库公开可见不构成开源授权。本许可仅授予以下明确权限，不转让任何知识产权。
 
-Third-party components retain their own licenses. See THIRD_PARTY_LICENSE.txt.
+2. 允许的使用：仅限个人非商业使用
+个人用户可从官方发布渠道获取软件，在其拥有或有权控制的设备上安装、运行，并为个人学习、研究和体验使用其功能。允许制作合理的个人备份。
+软件目前免费提供个人非商业使用；这不表示授予商业许可、源码复用许可或素材再分发许可，也不承诺未来版本永久免费或持续维护。
+
+3. 商业使用须另行授权
+未经CHAMBER事先书面授权，不得将软件用于收费服务、客户委托、企业或机构业务、商业展示、销售推广、商业生产或其他直接或间接获取商业利益的活动。授权价格、范围、期限和交付以双方另行书面约定为准。提出申请或支付未经确认的款项不自动形成许可。
+
+4. 内置模型、纹样与导出结果
+内置模型、纹样、图片和其他受限资源仅供软件内个人非商业体验。个人可为该目的使用内置导出功能查看效果；导出、截图、修改、转换格式或组合使用不改变原素材权利，也不授予商业利用或对外再分发权限。商业作品、商品、生产文件、素材库、模板和公开资源包等用途须取得相应权利人的另行书面授权。
+第三方独立许可的资源依其原许可，见第三方声明；本条不撤销其已授予的权利。
+
+5. 未授予的权限
+除法律强制允许或已取得另行书面许可外，不授予本项目专有源码的复制、修改、衍生开发、再许可或商业使用权；不允许对外再分发、转售或捆绑软件与受限原始资产。请通过官方链接分享下载渠道。不得删除版权和许可声明，亦不得以本软件品牌误导他人认为获得认可或合作。
+GitHub服务条款赋予平台用户的查看与平台内fork等权利及适用法律强制允许的行为不受本条排除；这些不构成额外的商业使用或再分发许可。
+
+6. 用户自行导入的内容
+用户保留其原有内容权利，本许可不将其转移给CHAMBER。用户负责取得所导入内容的必要授权。使用自己的素材仍须遵守本软件的个人非商业使用范围；如需商业工作流程，请先申请软件商业许可。软件许可不能替代第三方素材授权。
+
+7. 第三方组件
+Three.js、Capacitor、Electron、字体与其他第三方组件按其各自许可使用。THIRD_PARTY_LICENSE.txt和随包许可文本是相应声明；本许可不限制原许可已授予的权利。
+
+8. 无担保与责任限制
+在适用法律允许范围内，软件按现状提供，不承诺适销性、特定用途适用性、无错误或特定设备兼容性。三维预览不替代生产、工程或工艺验证。用户应备份重要文件并核对输出。在适用法律允许范围内，CHAMBER不对因使用或无法使用软件造成的间接损失或数据损失负责。本条不排除适用法律禁止排除或限制的责任及消费者法定权利。
+
+9. 许可终止与其他
+违反本许可且未获得额外授权时，应停止超范围使用；终止不影响依法已产生的责任。单项条款依法不可执行时，不影响其余可执行部分。不推定提供技术支持、维护、定制或商业服务。
+本许可不追溯变更已发布旧版本的条款。其他语言摘要与中文正式条款不一致时，在适用法律允许范围内以本中文版本为准。
+
+10. 联系方式
+权利人与授权联系方：CHAMBER
+邮箱：97101yy@gmail.com
+官方项目：https://github.com/hindingonhome/wupai
+
+English summary (informational): Wupai is proprietary software. Personal non-commercial use only. Commercial use requires prior written permission. Bundled proprietary models and patterns are for personal evaluation; export does not grant commercial or redistribution rights. Third-party components retain their own licenses. Contact: 97101yy@gmail.com.

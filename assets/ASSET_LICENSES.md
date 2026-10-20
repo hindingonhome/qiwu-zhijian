@@ -1,22 +1,19 @@
-# 下载资源来源与许可证
+# 素材来源与权利说明
 
-核对日期：2026-10-10。
+核对日期：2026-10-20。
 
-## 模块化场馆 GLB
-名称：Art Gallery and Exhibition Rooms；发布者：3DAssets.dev。
-资源页：https://3dassets.dev/packs/art-gallery-and-exhibition-rooms
-GLB：https://cdn.3dassets.dev/assets/35871/v1/model.glb
-许可：CC0 1.0 Universal。资源页明确允许商业使用、修改与再分发，无强制署名。
-文件：gallery-cc0.glb。下载后使用墙、地板、灯轨、画框、长椅与展柜模块重新布置；场馆材质调整为受灯光影响的暗色材质。墙上图画是资源自带的抽象占位构图，不是博物馆馆藏。
+## 黄铜PBR
 
-## 黄铜 PBR
-名称：Brass by Share Textures。
-下载资源与许可证页：https://cc0-textures.com/t/st-brass
-源作者许可说明：https://www.sharetextures.com/about
-下载：https://download.cc0-textures.com/st/brass-4K.zip
-许可：下载页面标注 CC0 / No Copyright，允许商业使用、修改与再分发。
-本地使用 color、normal、roughness、metalness 四图，缩小至 1024 像素用于离线预览。内壁保留模型自己的 UV 分区；黄铜贴图不与外壳纹样混用。
+名称：Brass by Share Textures。资源页：https://cc0-textures.com/t/st-brass 。源作者说明：https://www.sharetextures.com/about 。下载来源：https://download.cc0-textures.com/st/brass-4K.zip 。
 
-CC0 文本：https://creativecommons.org/publicdomain/zero/1.0/
+原获取记录标注CC0 / No Copyright。许可原文：https://creativecommons.org/publicdomain/zero/1.0/ 。该许可独立适用于对应黄铜纹理，允许商业使用、修改与再分发。本地使用color、normal、roughness、metalness四图的缩小版本。
 
-花瓶和橙金纹样来自用户提供的素材；上述 CC0 许可仅适用于此次下载的场馆和黄铜，不改变用户素材的权属。
+## 项目提供的模型、纹样与环境
+
+器物及水果模型、原始纹样、配色与环境HDR为项目提供资源。除独立标明的第三方许可外，不授予对外再分发或商业利用权限，仅限个人体验。导出或转换格式不会使受限资源变为CC0。商业用途联系CHAMBER：97101yy@gmail.com，最终以相应权利人的书面授权为准。
+
+## 品牌字形
+
+源泉圆体GenSen Rounded 2 TW Bold，SIL Open Font License 1.1。图标与字标使用轮廓，许可随包提供，仓库中见licenses/GenSen-OFL.txt，发行包内见Licenses/GenSen-OFL.txt。品牌商标或软件名称的使用不因字体许可自动获得授权。
+
+历史开发中试用的场馆资源不属于当前发行包的器物功能，不能将其许可误认为内置模型和纹样的通用许可。
