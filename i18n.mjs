@@ -1,4 +1,44 @@
-const entries=`藏库|Library
+const entries=`调整|Adjust
+调整纹样|Pattern adjustments
+收起调整|Close adjustments
+纹样疏密|Pattern density
+疏|Sparse
+密|Dense
+换颜色|Colors
+原色|Original
+暖阳|Warm
+清凉|Cool
+柔和|Soft
+再试一次|Try another
+此纹样保留原始大小。|This pattern keeps its original scale.
+先选择彩色纹样再调整疏密。|Choose a colored pattern to adjust its density.
+已尝试新的纹样疏密，可撤销。|Pattern density changed. Undo is available.
+已撤销表面调整。|Surface edit undone.
+已重做表面调整。|Surface edit redone.
+操作提示|Controls
+收起提示|Hide hints
+保存图片|Save image
+保存作品|Save work
+打开作品|Open work
+最近作品|Recent works
+收起最近作品|Close recent works
+作品名称|Work name
+导出|Export
+作品纹样|Saved pattern
+作品已保存在本机，可从最近作品继续。|Work saved locally. Continue from Recent works.
+作品已打开，可以继续编辑。|Work opened for editing.
+作品文件已导出，可重新打开编辑。|Editable work file exported.
+已取消作品文件导出。|Work file export cancelled.
+还没有作品，试试“保存作品”。|No saved works yet. Choose Save work to begin.
+保存可继续编辑的表面设计；图片由“保存画面”导出。|Save editable surface designs. Use Save image for pictures.
+作品列表不可用，请从本地文件打开。|Recent works unavailable. Open a local work file.
+本机列表不可用，作品已导出为文件。|Recent works unavailable. The work was exported as a file.
+作品尚未保存，请重试。|The work has not been saved. Please try again.
+作品保存失败|Unable to save work
+作品打开失败|Unable to open work
+作品导出失败|Unable to export work
+不是物派作品文件，请勿选择藏库备份|This is not an editable work file. Library backups use a different format
+藏库|Library
 首选项|Preferences
 说明与许可|Help & license
 说明与|Help &
@@ -39,6 +79,7 @@ const entries=`藏库|Library
 解锁后导入|Unlock to import
 藏库管理|Library management
 配置与备份|Configuration & backup
+藏库备份不包含作品；作品请从最近作品导出。|Library backups do not include works. Export works from Recent works.
 保存配置|Save configuration
 导入配置|Load configuration
 备份完整藏库|Back up library
@@ -166,12 +207,14 @@ const simple='库选项说许纹样规当前语简体数藏内添加导销锁编
 const traditional='庫選項說許紋樣規當前語簡體數藏內添加導銷鎖編輯刪稱備份習慣認讀後可狀態復蓋圖僅機處擇張換質細節類已有縫貼續鏡無還轉間屬燈補陰影觸屏動雙縮輪標籤儲權檢瀏覽器設實據隱聲關閉覽蘋荔枝龍銅黃葉與層啟顯覽';
 const conversion=new Map([...simple].map((c,i)=>[c,[...traditional][i]||c]));
 for(const pair of '饱飽 满滿 连連 观觀 壁壁 铜銅 质質 感感 弯彎 曲曲 承承 露露 底底 叶葉 细細 密密 纹紋 层層 红紅 萼萼 衬襯 轮輪 鳞鱗 勾勾 勒勒 紫紫 节節 应應 宽寬 绿綠 肩肩 过過 渡渡 两兩 枚枚 组組 圆圓 润潤 顶頂 衔銜 接接 凹凹 窝窩 点點 缀綴 扁扁 显顯 软軟 米米 对對 躯軀 卷卷 组組 剥剝 开開 环環 绕繞 构構 单單 根根 浅淺 轴軸 展展 说說 明明 码碼 页頁 夹夾 别別 会會 检檢 验驗 导導 损損 坏壞 错錯 误誤 败敗 请請 时時 模模 编編 删刪 际際 辑輯 数數 库庫 换換 选選 学學 术術 录錄 盘盤 压壓 限限 为為 将將 关關 并並 扫掃 图圖 导導 缩縮 稳穩 测測 试試 产產 认認 许許 授授 权權 隐隱 传傳 发發 输輸 扩擴 获獲 资資 源源 读讀 写寫 胶膠 糙糙 纹紋 镜鏡 器器 叶葉 对對 设設 计計 仅僅 度度 丝絲 滑滑 处處 理理 点點 无無 球球 帧幀 线線 动動 态態 储儲 览覽 载載 准準 备備 图圖 黄黃 荧螢 萤螢 汉漢 备備 与與 归歸 带帶 后後 额額 个個 这這 头頭 总總 变變 均均 铺鋪 叠疊 缓緩 冲衝 断斷 实實 达達 签簽 证證 频頻 移移 触觸 屏屏 游遊 滤濾 里裡 够夠'.split(' '))conversion.set(pair[0],pair[1]);
+for(const pair of '调調 颜顏 阳陽 再再 疏疏 密密 继繼 几幾 画畫 续續 变變 视視 试試 种種 经經 录錄 复復'.split(' '))conversion.set(pair[0],pair[1]);
+const replacementEnglish=[...english].sort((a,b)=>b[0].length-a[0].length);
 let language='zh-CN';const records=new WeakMap(),attributes=new WeakMap();let scheduled=false;
 export const getLanguage=()=>language;
 export function translate(text){if(language==='zh-TW')return [...text].map(c=>conversion.get(c)||c).join('');if(language==='en'){const clean=text.trim(),translated=english.get(clean);if(translated)return text.replace(clean,translated);
 const exact={'＋ 导入器物':'+ Import object','导入数字模型':'Imported digital model','程序生成示意模型':'Procedural model','正在准备器物…':'Preparing object…','纹样已连续铺贴，无叠加融合。':'Pattern applied continuously without blending.','正在加载本地资源…':'Loading local assets…','已应用抛光纯铜材质。':'Polished copper applied.','已应用仿金色材质。':'Gold finish applied.','贴图已清除。':'Texture cleared.','材质已更新。':'Material updated.','已恢复模型原材质；导入贴图和参数仍保留，切换白瓷等可继续编辑。':'Original material restored. Imported textures and settings remain available.','模型缺少 UV，已改用三平面投射。':'No UVs found. Using triplanar mapping.','拖动环绕器物，或展开“材质与纹样”导入贴图。':'Drag to rotate. Open Patterns to import a texture.','已导出当前三维展品画面 PNG。':'Current view exported as PNG.','已导出 GLB，包含当前纹样、密度与材质。':'GLB exported with current patterns, density and materials.'};
 if(exact[clean])return text.replace(clean,exact[clean]);let value=text;
-for(const [source,target]of [...english].sort((a,b)=>b[0].length-a[0].length))if(source.length>1&&value.includes(source))value=value.split(source).join(target);
+for(const [source,target]of replacementEnglish)if(source.length>1&&value.includes(source))value=value.split(source).join(target);
 return value;}return text;}
 function excluded(element){return element?.closest('script,style,[data-user-content],.help-body,.help-license');}
 export function refreshTranslations(){scheduled=false;const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);while(walker.nextNode()){const node=walker.currentNode;if(excluded(node.parentElement)||!node.textContent.trim())continue;const old=records.get(node),source=old&&node.textContent===old.value?old.source:node.textContent,value=translate(source);records.set(node,{source,value});if(node.textContent!==value)node.textContent=value;}

@@ -28,10 +28,10 @@ export function initVaseTextures({viewer,getKind,onApplied=()=>{}}){
   const group={host,more,popover,buttons:[]};groups.push(group);
   for(const id of VASE_PROFILE_IDS){
    const profile=FRUIT_PROFILES[id],button=document.createElement('button');button.type='button';button.className='swatch vase-profile';button.dataset.vaseProfile=id;button.setAttribute('aria-label',profile.name+(id.endsWith('-production')?'纹样':'原配色纹样'));button.setAttribute('aria-pressed','false');button.style.background='conic-gradient('+(profile.cardColors||profile.colors).map(color=>'#'+color).join(',')+')';
-   button.onclick=()=>{
+   button.onclick=async()=>{
     if(getKind()!=='vase')return;
     document.querySelectorAll('.quick-patterns .swatch,.sample-row .swatch').forEach(other=>other.setAttribute('aria-pressed','false'));
-    onApplied(id);syncPressed();close();
+    await onApplied(id);syncPressed();close();
    };
    group.buttons.push(button);
   }

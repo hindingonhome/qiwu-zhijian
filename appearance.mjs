@@ -12,10 +12,11 @@ export function initAppearance(viewer){
   try{await animation.finished;}finally{clearTimeout(midpoint);choose(next);flipping=false;toggle.removeAttribute('aria-busy');}
  };choose('light');
  const tip=document.createElement('div');tip.id='material-tooltip';tip.className='material-tooltip';tip.role='tooltip';tip.hidden=true;document.body.append(tip);
- const hide=()=>{tip.hidden=true;};
- document.querySelectorAll('.swatch').forEach(button=>{button.removeAttribute('title');button.setAttribute('aria-describedby','material-tooltip');
+ const hide=()=>{tip.hidden=true;};window.addEventListener('wupai-popover',hide);
+ const bound=new WeakSet();
+ const refreshTooltips=()=>document.querySelectorAll('.swatch,.quick-upload,#spin-speed,#theme-toggle,#playback-toggle,#surface-adjust,[data-tooltip]').forEach(button=>{if(bound.has(button))return;bound.add(button);button.removeAttribute('title');button.setAttribute('aria-describedby','material-tooltip');
  const show=()=>{tip.textContent=button.getAttribute('aria-label');tip.hidden=false;const r=button.getBoundingClientRect(),t=tip.getBoundingClientRect();tip.style.left=Math.max(12,Math.min(innerWidth-t.width-12,r.left+r.width/2-t.width/2))+'px';tip.style.top=Math.max(12,r.top-t.height-12)+'px';};
  button.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')show();});button.addEventListener('pointerleave',hide);button.addEventListener('focus',show);button.addEventListener('blur',hide);
- });window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
- return {choose};
+ });refreshTooltips();window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+ return {choose,refreshTooltips};
 }

@@ -1,3 +1,4 @@
+import {paletteColors} from './surface-palette.mjs';
 import {FRUIT_PROFILES} from './fruit-profiles.mjs';
 const linear=c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4;
 const rgb=hex=>[0,2,4].map(i=>linear(parseInt(hex.slice(i,i+2),16)/255));
@@ -5,10 +6,11 @@ const v3=hex=>'vec3('+rgb(hex).map(v=>v.toFixed(8)).join(',')+')';
 export const effectiveDensity=(kind,value=1)=>(FRUIT_PROFILES[kind]?.baseDensity||1)*value;
 export function flowValue(x,y,z,density=1){const p=[x,y,z].map(v=>v*8.8*density),q=[p[0]+.8*(Math.sin(p[1]*1.4)+.45*Math.cos(p[2]*1.8)),p[1]+.8*(Math.sin(p[2]*1.3)+.45*Math.cos(p[0]*1.7)),p[2]+.8*(Math.sin(p[0]*1.2)+.45*Math.cos(p[1]*1.6))];const f=Math.sin(q[0])*Math.cos(q[1])+.72*Math.sin(q[1]+q[2])+.35*Math.cos(q[2]*1.6-q[0]*.4),v=f*.55+.31;return v-Math.floor(v);}
 function paletteCode(profile,name){return `vec3 ${name}(float t){float edge=max(.0006,min(.008,fwidth(t)*.55));vec3 color=${v3(profile.bands[0].color)};\n`+profile.bands.slice(0,-1).map((band,i)=>`color=mix(color,${v3(profile.bands[i+1].color)},smoothstep(${band.end.toFixed(7)}-edge,${band.end.toFixed(7)}+edge,t));`).join('\n')+'\nreturn color;}';}
-export function fruitPaletteUniforms(kind){
+export function fruitPaletteUniforms(kind,paletteId='original'){
  const profile=FRUIT_PROFILES[kind]||FRUIT_PROFILES.mango,colors=new Float32Array(24),ends=new Float32Array(8);
+ const palette=paletteColors(profile.bands.map(b=>b.color),paletteId);
  if(profile.bands.length>8)throw new Error('纹样色带超过 8 层，请扩展共享调色板容量');
- for(let i=0;i<8;i++){const band=profile.bands[Math.min(i,profile.bands.length-1)];colors.set(rgb(band.color),i*3);ends[i]=i<profile.bands.length?Number(band.end.toFixed(7)):2;}
+ for(let i=0;i<8;i++){const band=profile.bands[Math.min(i,profile.bands.length-1)];colors.set(rgb(palette[Math.min(i,palette.length-1)]),i*3);ends[i]=i<profile.bands.length?Number(band.end.toFixed(7)):2;}
  return {fruitColors:{value:colors},fruitEnds:{value:ends},fruitInnerEnabled:{value:kind==='banana'||kind==='banana-production'?1:0}};
 }
 export function buildFruitShader(){return `

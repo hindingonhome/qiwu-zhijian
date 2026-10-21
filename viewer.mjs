@@ -18,7 +18,7 @@ RectAreaLightUniformsLib.init();
 
 export class GalleryViewer{
  constructor(container,report){
-  this.container=container;this.report=report;this.token=0;this.meshes=[];this.modelCache=new Map();this.lighting={...LIGHT_DEFAULTS};this.settings={repeat:1,angle:0,offsetX:0,offsetY:0,projection:'uv',roughness:PAINT_FINISH.roughness,metalness:0,color:'#e7e0cf',original:false};
+  this.container=container;this.report=report;this.token=0;this.meshes=[];this.modelCache=new Map();this.lighting={...LIGHT_DEFAULTS};this.settings={paletteId:'original',repeat:1,angle:0,offsetX:0,offsetY:0,projection:'uv',roughness:PAINT_FINISH.roughness,metalness:0,color:'#e7e0cf',original:false};
   this.renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;this.renderer.toneMapping=THREE.ACESFilmicToneMapping;this.renderer.toneMappingExposure=.95;container.append(this.renderer.domElement);
   this.scene=new THREE.Scene();
   this.camera=new THREE.PerspectiveCamera(38,1,.05,60);this.controls=new OrbitControls(this.camera,this.renderer.domElement);this.controls.enableDamping=false;this.controls.rotateSpeed=.45;this.controls.zoomSpeed=.65;this.controls.enablePan=false;this.controls.minDistance=.75;this.controls.maxDistance=ORBIT_LIMIT;this.controls.minPolarAngle=.24;this.controls.maxPolarAngle=MAX_POLAR;this.controls.autoRotateSpeed=.65;this.dirty=true;this.controls.addEventListener('change',()=>{this.dirty=true;});
@@ -138,11 +138,11 @@ export class GalleryViewer{
    }
    if(s.fruitFlow&&!interior&&!s.solid){
     const profile=this.settings.fruitProfile||this.currentKind;
-    mesh.geometry.computeBoundingBox();const box=mesh.geometry.boundingBox,origin=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3()),unit=1/Math.max(size.x,size.y,size.z);
+    if(!mesh.geometry.boundingBox)mesh.geometry.computeBoundingBox();const box=mesh.geometry.boundingBox,origin=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3()),unit=1/Math.max(size.x,size.y,size.z);
     if(!mesh.geometry.attributes.coatMask){const count=mesh.geometry.attributes.position.count;mesh.geometry.setAttribute('coatMask',mesh.geometry.attributes._coat_mask||new THREE.Float32BufferAttribute(new Float32Array(count).fill(1),1));mesh.geometry.setAttribute('innerMask',mesh.geometry.attributes._inner_mask||new THREE.Float32BufferAttribute(new Float32Array(count),1));}
     material.clearcoat=PAINT_FINISH.clearcoat;material.clearcoatRoughness=PAINT_FINISH.clearcoatRoughness;
     material.onBeforeCompile=shader=>{
-     Object.assign(shader.uniforms,fruitPaletteUniforms(profile));shader.uniforms.fruitOrigin={value:origin};shader.uniforms.fruitUnit={value:unit};shader.uniforms.fruitDensity={value:effectiveDensity(profile,s.repeat)};
+     Object.assign(shader.uniforms,fruitPaletteUniforms(profile,s.paletteId));shader.uniforms.fruitOrigin={value:origin};shader.uniforms.fruitUnit={value:unit};shader.uniforms.fruitDensity={value:effectiveDensity(profile,s.repeat)};
      shader.vertexShader='attribute float coatMask;attribute float innerMask; varying float fruitCoat;varying float fruitInner;varying vec3 fruitPosition; uniform vec3 fruitOrigin; uniform float fruitUnit;\n'+shader.vertexShader;
      shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nfruitPosition=(position-fruitOrigin)*fruitUnit;fruitCoat=coatMask;fruitInner=innerMask;');
      shader.fragmentShader=buildFruitShader(profile)+shader.fragmentShader;

@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {DesignHistory} from '../design-history.mjs';
+test('surface edits undo and redo without recording no-ops',async()=>{let value=1;const h=new DesignHistory({capture:()=>({value}),restore:s=>{value=s.value}});await h.edit(()=>{value=2});await h.edit(()=>{});assert.equal(h.past.length,1);await h.undo();assert.equal(value,1);await h.redo();assert.equal(value,2);});
+test('continuous slider input is one undo action',async()=>{let value=1;const h=new DesignHistory({capture:()=>({value}),restore:s=>{value=s.value}});for(const n of [2,3,4,5])h.change(()=>{value=n});h.flush();assert.equal(h.past.length,1);await h.undo();assert.equal(value,1);});
+test('failed restore does not discard undo history',async()=>{let value=1;const h=new DesignHistory({capture:()=>({value}),restore:()=>{throw Error('restore failed')}});await h.edit(()=>{value=2});await assert.rejects(h.undo());assert.equal(h.past.length,1);});
+test('editing after undo clears redo and history is bounded',async()=>{let value=0;const h=new DesignHistory({capture:()=>({value}),restore:s=>{value=s.value},limit:3});for(let i=1;i<=5;i++)await h.edit(()=>{value=i});assert.equal(h.past.length,3);await h.undo();await h.edit(()=>{value=9});assert.equal(h.future.length,0);h.reset();assert.equal(h.past.length,0);});
