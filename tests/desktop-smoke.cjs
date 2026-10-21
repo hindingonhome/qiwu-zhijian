@@ -18,6 +18,7 @@ const path = require('node:path');
   assert.deepEqual(await page.evaluate(()=>[typeof require, typeof process, typeof Buffer, typeof wupaiDesktop.download]), ['undefined','undefined','undefined','function']);
   const preferences=await application.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].webContents.getLastWebPreferences());
   assert.equal(preferences.sandbox,true); assert.equal(preferences.contextIsolation,true); assert.equal(preferences.nodeIntegration,false); assert.equal(preferences.webSecurity,true);
+  assert.ok(await page.evaluate(()=>document.querySelector('nav').contains(document.querySelector('#help-open'))&&document.querySelector('#site-header').contains(document.querySelector('#caption-name'))),'packaged interface must include V1.1.3 top bar');
   await page.locator('#help-open').click();await page.getByRole('tab',{name:'使用许可',exact:true}).click();assert.ok((await page.locator('#help-body').innerText()).includes('仅限个人非商业使用'));await page.getByRole('button',{name:'关闭使用说明'}).click();
   for(const id of ['apple','watermelon']) {
    await page.evaluate(id=>document.querySelector('[data-kind='+id+']').click(),id);

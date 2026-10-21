@@ -7,4 +7,4 @@ export function safeViewport({height,titleBottom,controlsTop}){
  if(occupied>budget&&occupied){const ratio=budget/occupied;top*=ratio;bottom*=ratio;}
  return {top,bottom,height:h-top-bottom};
 }
-export function fitDistance({width,height,depth,aspect,fov}){const tangent=Math.tan(fov*Math.PI/360);return Math.min(6.5,Math.max(1.5,Math.max(height/2/tangent,width/2/(tangent*Math.max(.1,aspect)))*1.16+depth*.4));}
+export function fitDistance({width,height,depth,aspect,fov}){const tangent=Math.tan(fov*Math.PI/360);return Math.min(6.5,Math.max(2.6,Math.max(height/2/tangent,width/2/(tangent*Math.max(.1,aspect)))*1.24+depth*.5));}

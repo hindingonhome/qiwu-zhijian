@@ -1,7 +1,7 @@
 export function initAppearance(viewer){
  let mode='light';
  const toggle=document.getElementById('theme-toggle');
- const choose=value=>{mode=value;document.documentElement.dataset.theme=value;viewer.setTheme(value);toggle.setAttribute('aria-pressed',String(value==='dark'));toggle.setAttribute('aria-label',value==='dark'?'切换为浅色':'切换为深色');};
+ const choose=value=>{mode=value;document.documentElement.dataset.theme=value;viewer.setTheme(value);toggle.setAttribute('aria-pressed',String(value==='dark'));toggle.setAttribute('aria-label',value==='dark'?'切换为浅色':'切换为深色');window.dispatchEvent(new Event('appearancechange'));};
  let flipping=false;
  toggle.onclick=async()=>{
   if(flipping)return;const next=mode==='light'?'dark':'light';
@@ -17,4 +17,5 @@ export function initAppearance(viewer){
  const show=()=>{tip.textContent=button.getAttribute('aria-label');tip.hidden=false;const r=button.getBoundingClientRect(),t=tip.getBoundingClientRect();tip.style.left=Math.max(12,Math.min(innerWidth-t.width-12,r.left+r.width/2-t.width/2))+'px';tip.style.top=Math.max(12,r.top-t.height-12)+'px';};
  button.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')show();});button.addEventListener('pointerleave',hide);button.addEventListener('focus',show);button.addEventListener('blur',hide);
  });window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+ return {choose};
 }

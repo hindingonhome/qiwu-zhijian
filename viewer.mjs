@@ -22,7 +22,7 @@ export class GalleryViewer{
   this.renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;this.renderer.toneMapping=THREE.ACESFilmicToneMapping;this.renderer.toneMappingExposure=.95;container.append(this.renderer.domElement);
   this.scene=new THREE.Scene();
   this.camera=new THREE.PerspectiveCamera(38,1,.05,60);this.controls=new OrbitControls(this.camera,this.renderer.domElement);this.controls.enableDamping=false;this.controls.rotateSpeed=.45;this.controls.zoomSpeed=.65;this.controls.enablePan=false;this.controls.minDistance=.75;this.controls.maxDistance=ORBIT_LIMIT;this.controls.minPolarAngle=.24;this.controls.maxPolarAngle=MAX_POLAR;this.controls.autoRotateSpeed=.65;this.dirty=true;this.controls.addEventListener('change',()=>{this.dirty=true;});
-  this.makeLighting();this.setLight();this.reset();this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(container);for(const element of container.closest('.stage')?.querySelectorAll('.exhibition-title,.object-controls')||[])this.resizeObserver.observe(element);this.resize();
+  this.makeLighting();this.setLight();this.reset();this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(container);for(const element of [document.querySelector('#site-header .nav-inner'),container.closest('.stage')?.querySelector('.object-controls')])if(element)this.resizeObserver.observe(element);this.resize();
   this.brass={};const tl=new THREE.TextureLoader();this.brassReady=Promise.all(['color','normal','roughness','metalness'].map(async name=>{const t=await tl.loadAsync(assetURL(`./assets/brass/${name}.jpg`));if(name==='color')t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,2);this.brass[name]=t;})).then(()=>this.updateMaterial()).catch(()=>this.report('黄铜贴图未加载，使用黄铜参数材质。'));
   this.controls.mouseButtons={LEFT:null,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:null};this.bindGestures();
   this.clock=new THREE.Clock();this.renderer.setAnimationLoop(()=>{const dt=Math.min(this.clock.getDelta(),.05);this.controls.update(dt);if(this.switching)return;if(this.autoSpin&&this.spinPivot)this.spinPivot.rotation.y+=dt*(this.autoSpinSpeed??.12);if(this.dirty||this.autoSpin){this.renderer.render(this.scene,this.camera);this.dirty=false;}});
@@ -39,7 +39,7 @@ export class GalleryViewer{
   this.fill=new THREE.DirectionalLight('#e5e9e8',.3);this.fill.position.set(3,3,2);this.lights.add(this.fill);this.rim=new THREE.DirectionalLight('#e5dcc8',.35);this.rim.position.set(-1,3,-2);this.lights.add(this.rim);
   this.softbox=new THREE.RectAreaLight('#fff8ec',3.2,3.5,4);this.softbox.position.set(-3,3.5,4);this.softbox.lookAt(0,1,0);this.lights.add(this.softbox);this.softFill=new THREE.RectAreaLight('#edf2ff',1.6,2.5,3);this.softFill.position.set(3,2,1);this.softFill.lookAt(0,1,0);this.lights.add(this.softFill);this.dirty=true;
  }
- resize(){const w=this.container.clientWidth,h=this.container.clientHeight;if(!w||!h)return;const bounds=this.container.getBoundingClientRect(),stage=this.container.closest('.stage'),title=stage?.querySelector('.exhibition-title')?.getBoundingClientRect(),controls=stage?.querySelector('.object-controls')?.getBoundingClientRect();const area=safeViewport({height:h,titleBottom:title?title.bottom-bounds.top:90,controlsTop:controls?controls.top-bounds.top:h-200});stage?.style.setProperty('--stage-safe-top',area.top+'px');stage?.style.setProperty('--stage-safe-bottom',area.bottom+'px');this.camera.setViewOffset(w,area.height,0,-area.top,w,h);this.renderer.setSize(w,h,false);this.dirty=true;}
+ resize(){const w=this.container.clientWidth,h=this.container.clientHeight;if(!w||!h)return;const bounds=this.container.getBoundingClientRect(),stage=this.container.closest('.stage'),title=document.querySelector('#site-header .nav-inner')?.getBoundingClientRect(),controls=stage?.querySelector('.object-controls')?.getBoundingClientRect();const area=safeViewport({height:h,titleBottom:title?title.bottom-bounds.top:90,controlsTop:controls?controls.top-bounds.top:h-200});this.camera.setViewOffset(w,area.height,0,-area.top,w,h);this.renderer.setSize(w,h,false);this.dirty=true;}
  bindGestures(){
   const canvas=this.renderer.domElement;let gesture;const touches=new Set();this.controls.touches.ONE=null;
   canvas.addEventListener('contextmenu',e=>e.preventDefault());
@@ -71,7 +71,7 @@ export class GalleryViewer{
  }
  async select(kind){
   this.currentKind=kind;const token=++this.token;let raw;
-  if(this.modelCache.has(kind)){const entry=this.modelCache.get(kind);this.detachRoot();this.modelCache.delete(kind);this.modelCache.set(kind,entry);Object.assign(this,{root:entry.root,meshes:entry.meshes,artifactPivot:entry.artifactPivot,spinPivot:entry.spinPivot});this.scene.add(this.spinPivot);this.settings.projection=artifactById(kind)?.projection||'uv';this.reset();this.updateMaterial();return entry.info;}
+  if(this.modelCache.has(kind)){const entry=this.modelCache.get(kind);this.detachRoot();this.modelCache.delete(kind);this.modelCache.set(kind,entry);Object.assign(this,{root:entry.root,meshes:entry.meshes,artifactPivot:entry.artifactPivot,spinPivot:entry.spinPivot});this.scene.add(this.spinPivot);this.settings.projection=kind.startsWith('custom:')?(entry.info.hasUV?'uv':'triplanar'):(artifactById(kind)?.projection||'uv');this.reset();this.updateMaterial();return entry.info;}
   if(kind==='vase'){try{raw=(await new GLTFLoader().loadAsync(assetURL('./assets/vase.glb'))).scene;}catch{raw=createArtifact('vase');this.report('原花瓶加载失败，已使用示意花瓶。',true);}}
   else{const path=artifactById(kind)?.asset;if(!path)throw new Error('未找到这个器物');raw=(await new GLTFLoader().loadAsync(assetURL(path))).scene;}
   if(token!==this.token){this.disposeRoot(raw);return null;}
@@ -83,9 +83,10 @@ export class GalleryViewer{
   if(profile?.pose){raw.updateMatrixWorld(true);const center=new THREE.Box3().setFromObject(raw).getCenter(new THREE.Vector3());raw.position.sub(center);const posed=new THREE.Group();posed.rotation.set(...profile.pose,'ZYX');posed.add(raw);raw=posed;}
   return this.install(raw);
  }
- async importModel(file){
+ async importModel(file,modelId){
+  if(modelId&&this.modelCache.has('custom:'+modelId))return this.select('custom:'+modelId);
   if(file.size>100*1024*1024)throw new Error('模型超过 100 MB，请先精简模型。');
-  this.currentKind='custom';this.settings.fruitFlow=false;this.settings.solid=false;this.settings.mangoLacquer=false;this.settings.lacquerVase=false;this.settings.roughness=PAINT_FINISH.roughness;this.settings.metalness=0;const token=++this.token,data=await file.arrayBuffer();
+  this.currentKind=modelId?'custom:'+modelId:'custom';this.settings.fruitFlow=false;this.settings.solid=false;this.settings.mangoLacquer=false;this.settings.lacquerVase=false;this.settings.roughness=PAINT_FINISH.roughness;this.settings.metalness=0;const token=++this.token,data=await file.arrayBuffer();
   if(file.name.toLowerCase().endsWith('.stl')){const geometry=new STLLoader().parse(data);geometry.computeVertexNormals();const raw=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:'#ffffff',roughness:.45}));if(token!==this.token){geometry.dispose();return null;}this.settings.projection='triplanar';return this.install(raw);}
   if(file.name.toLowerCase().endsWith('.gltf')){
    const json=JSON.parse(new TextDecoder().decode(data));
