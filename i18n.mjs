@@ -1,4 +1,101 @@
-const entries=`调整|Adjust
+const entries=`撤销 · Ctrl+Z|Undo · Ctrl+Z
+重做 · Ctrl+Shift+Z / Ctrl+Y|Redo · Ctrl+Shift+Z / Ctrl+Y
+盘子顶面 · 平面投射|Plate top · Planar projection
+顶面平面投射|Top planar projection
+选择导出纹理|Select a texture to export
+所选纹理预览|Selected texture preview
+仅选择导出内容，器物上的纹样保持不变。|This selects export content and keeps the object appearance unchanged.
+保存与导出纹理|Save and export textures
+选择纹理|Texture
+生成器当前设计|Current generator design
+已生成纹样|Generated patterns
+点选色球应用到当前器物，角标可删除记录。|Select a swatch to apply to this object. Use its badge to delete it.
+生成并应用后，纹样会保留在这里。|Generated and applied patterns are kept here.
+打包导出全部纹理 ZIP|Export all textures as ZIP
+已从当前器物移除纹样，可从总库重新添加。|Pattern removed from this object. Add it again from All patterns.
+已删除生成纹样。|Generated pattern deleted.
+纹样生成|Pattern generator
+纹样已应用并加入总库，可在其他器物上选用。|Pattern applied and added to All patterns. Select it to use on other objects.
+纹样仅在当前会话保留，请保存作品或导出 PNG。|This texture is available for this session. Save a work or export a PNG to keep it.
+总纹样库|All patterns
+当前器物纹样|Patterns for this object
+本机纹样库不可用，当前会话仍可使用纹样。|Local texture storage is unavailable. Textures remain available in this session.
+本机纹样库已满，请先导出重要纹样|The local texture library is full. Export important textures first.
+生成纹样未能应用，请重试|The generated texture could not be applied. Try again.
+当前设备请使用 2048 像素或更低分辨率|Use 2048 pixels or lower on this device
+纹理生成|Texture generator
+生成方式|Mode
+固定矢量|Fixed vector
+图像纹样|Image pattern
+配色色数|Palette size
+生成纹样预览|Generated pattern preview
+导入纹样图片|Import pattern image
+参考图取色|Colors from reference
+生成纹样配色|Pattern palette
+点选两枚色卡的交换按钮，或拖动色卡交换颜色。|Select Swap on two swatches, or drag swatches to exchange their colors.
+随机配色|Random colors
+全部锁定|Lock all
+全部解锁|Unlock all
+金线与边缘|Gold lines & edges
+保护金线|Protect gold lines
+金线颜色|Gold line color
+金线识别|Gold detection
+智能识别|Smart
+仅亮金线|Bright lines only
+宽松识别|Relaxed
+金线加粗|Line thickness
+金线透明，应用时露铜|Transparent gold lines reveal copper
+抗锯齿|Antialiasing
+固定矢量的金线独立于颜色分区；图像模式可区分亮金线与土黄色。|Vector gold lines are independent. Image mode separates bright gold lines from ochre.
+生成并应用|Generate & apply
+仅在本机处理，可继续切换器物查看。|Processed locally. Switch objects to inspect the result.
+保存贴图与配色|Save texture & palette
+贴图分辨率|Texture resolution
+打印精度|Print density
+分辨率决定像素细节，DPI 为打印元数据。SVG 保留原始矢量精度。|Resolution controls pixel detail. DPI is print metadata. SVG retains the original vector precision.
+保存纯图 PNG|Save texture PNG
+保存矢量 SVG|Save vector SVG
+保存配色色卡|Save palette card
+保存设计图|Save design sheet
+正在准备纹样…|Preparing pattern…
+正在生成预览…|Generating preview…
+固定矢量预览已更新|Vector preview updated
+图像纹样预览已更新|Image preview updated
+请先导入纹样图片|Import a pattern image first
+正在提取颜色…|Extracting colors…
+正在生成，请稍候…|Generating, please wait…
+固定矢量已生成|Vector pattern generated
+图像纹样已生成|Image pattern generated
+生成纹样已应用，可切换器物查看。|Generated pattern applied. Switch objects to view it.
+请选择 30 MB 以内的 PNG、JPG 或 WebP|Choose a PNG, JPG or WebP up to 30 MB
+图片生成失败，请降低分辨率|Image generation failed. Lower the resolution.
+固定纹样加载失败|Fixed pattern could not be loaded
+图片像素过大，请先缩小图片|The image is too large. Resize it first.
+图像后台处理失败，请重新打开应用再试|Image processing failed. Reopen the app to retry.
+锁定颜色|Lock color
+交换颜色|Swap color
+交换|Swap
+栏目设置|Collection settings
+确认删除|Confirm deletion
+栏目及其中的模型将移除，可在首选项中撤销。|The collection and its models will be removed. Undo is available in Preferences.
+此项将移除，可在首选项中撤销。|This item will be removed. Undo is available in Preferences.
+更多纹样|More patterns
+已应用仿大漆肌理。|Lacquer texture applied.
+导出位置|Export location
+选择默认文件夹|Choose default folder
+恢复默认|Reset to default
+每次导出时询问位置|Ask where to save each export
+尚未选择默认文件夹|No default folder selected
+由系统或浏览器管理|Managed by the system or browser
+可每次选择保存位置，或直接保存到默认文件夹；同名文件自动编号。|Choose a location each time, or save directly to your default folder. Duplicate names receive a number.
+授权后导出到所选文件夹；清除设置后由浏览器下载设置管理。浏览器重启后可能需要重新授权。|Exports go to the authorized folder. Reset to use browser downloads. Permission may be needed again after restarting the browser.
+安卓导出时使用系统文件选择器，每次选择保存位置。|Android uses the system file picker to choose a location for each export.
+此浏览器不支持应用内选择文件夹，请在浏览器下载设置中选择位置。|This browser cannot choose folders inside the app. Use its download settings to choose a location.
+圆形盘子|Round plate
+连续肌理仅铺贴于盘子顶面；侧沿与底面保持仿金漆黄铜效果，翻转可观察两面的材质对比。|Patterns cover only the top. The rim and underside retain a gold lacquer brass finish. Rotate the plate to inspect both surfaces.
+新派|New collection
+表面编辑记录|Surface edit history
+调整|Adjust
 调整纹样|Pattern adjustments
 收起调整|Close adjustments
 纹样疏密|Pattern density
@@ -37,8 +134,8 @@ const entries=`调整|Adjust
 作品保存失败|Unable to save work
 作品打开失败|Unable to open work
 作品导出失败|Unable to export work
-不是物派作品文件，请勿选择藏库备份|This is not an editable work file. Library backups use a different format
-藏库|Library
+不是物派作品文件，请勿选择派库备份|This is not an editable work file. Library backups use a different format
+派库|Library
 首选项|Preferences
 说明与许可|Help & license
 说明与|Help &
@@ -52,7 +149,7 @@ const entries=`调整|Adjust
 界面语言|Interface language
 简体中文|简体中文
 繁體中文|繁體中文
-我的数字藏库|My digital collection
+我的数字派库|My digital collection
 水果派|Fruit collection
 内置|Built-in
 添加新派|Add collection
@@ -77,27 +174,27 @@ const entries=`调整|Adjust
 添加|Add
 导入模型|Import model
 解锁后导入|Unlock to import
-藏库管理|Library management
+派库管理|Library management
 配置与备份|Configuration & backup
-藏库备份不包含作品；作品请从最近作品导出。|Library backups do not include works. Export works from Recent works.
+派库备份不包含作品；作品请从最近作品导出。|Library backups do not include works. Export works from Recent works.
 保存配置|Save configuration
 导入配置|Load configuration
-备份完整藏库|Back up library
-恢复完整藏库|Restore library
+备份完整派库|Back up library
+恢复完整派库|Restore library
 按你的习惯收藏。|A collection of your own.
 默认内容只读。自建栏目解锁后可编辑，增删均可撤销。|Built-in content is read-only. Unlock custom collections to edit. Additions and deletions can be undone.
 配置保存栏目和界面设置；完整备份同时包含导入模型。请定期备份。|Configuration saves collections and interface settings. A full backup includes imported models. Back up regularly.
-恢复完整藏库会替换当前自建内容，可使用撤销恢复。配置导入会保留已有模型。|Restoring a full backup replaces custom content and can be undone. Loading configuration keeps existing models.
+恢复完整派库会替换当前自建内容，可使用撤销恢复。配置导入会保留已有模型。|Restoring a full backup replaces custom content and can be undone. Loading configuration keeps existing models.
 使用手册和许可正文保留简体中文原文。|The manual and legal documents retain their original Simplified Chinese text.
 用户导入模型|Imported model
 本机保存，仅供本人管理。|Saved locally for your collection.
 导入模型后可在解锁状态编辑名称和说明。|Unlock to edit model names and descriptions.
-本机藏库不可用，请检查浏览器存储权限。|Local library unavailable. Check browser storage permissions.
+本机派库不可用，请检查浏览器存储权限。|Local library unavailable. Check browser storage permissions.
 已保存，可撤销。|Saved. Undo is available.
 已撤销。|Undone.
 已重做。|Redone.
 已导入配置，可撤销。|Configuration loaded. Undo is available.
-已恢复藏库，可撤销。|Library restored. Undo is available.
+已恢复派库，可撤销。|Library restored. Undo is available.
 已导出备份。|Backup exported.
 已取消保存。|Save cancelled.
 请先解锁自建栏目|Unlock this collection first
@@ -208,6 +305,7 @@ const traditional='庫選項說許紋樣規當前語簡體數藏內添加導銷�
 const conversion=new Map([...simple].map((c,i)=>[c,[...traditional][i]||c]));
 for(const pair of '饱飽 满滿 连連 观觀 壁壁 铜銅 质質 感感 弯彎 曲曲 承承 露露 底底 叶葉 细細 密密 纹紋 层層 红紅 萼萼 衬襯 轮輪 鳞鱗 勾勾 勒勒 紫紫 节節 应應 宽寬 绿綠 肩肩 过過 渡渡 两兩 枚枚 组組 圆圓 润潤 顶頂 衔銜 接接 凹凹 窝窩 点點 缀綴 扁扁 显顯 软軟 米米 对對 躯軀 卷卷 组組 剥剝 开開 环環 绕繞 构構 单單 根根 浅淺 轴軸 展展 说說 明明 码碼 页頁 夹夾 别別 会會 检檢 验驗 导導 损損 坏壞 错錯 误誤 败敗 请請 时時 模模 编編 删刪 际際 辑輯 数數 库庫 换換 选選 学學 术術 录錄 盘盤 压壓 限限 为為 将將 关關 并並 扫掃 图圖 导導 缩縮 稳穩 测測 试試 产產 认認 许許 授授 权權 隐隱 传傳 发發 输輸 扩擴 获獲 资資 源源 读讀 写寫 胶膠 糙糙 纹紋 镜鏡 器器 叶葉 对對 设設 计計 仅僅 度度 丝絲 滑滑 处處 理理 点點 无無 球球 帧幀 线線 动動 态態 储儲 览覽 载載 准準 备備 图圖 黄黃 荧螢 萤螢 汉漢 备備 与與 归歸 带帶 后後 额額 个個 这這 头頭 总總 变變 均均 铺鋪 叠疊 缓緩 冲衝 断斷 实實 达達 签簽 证證 频頻 移移 触觸 屏屏 游遊 滤濾 里裡 够夠'.split(' '))conversion.set(pair[0],pair[1]);
 for(const pair of '调調 颜顏 阳陽 再再 疏疏 密密 继繼 几幾 画畫 续續 变變 视視 试試 种種 经經 录錄 复復'.split(' '))conversion.set(pair[0],pair[1]);
+for(const pair of '护護 纯純 识識 随隨 随隨 锁鎖 颜顏 边邊 缘緣 矢矢 量量'.split(' '))conversion.set(pair[0],pair[1]);
 const replacementEnglish=[...english].sort((a,b)=>b[0].length-a[0].length);
 let language='zh-CN';const records=new WeakMap(),attributes=new WeakMap();let scheduled=false;
 export const getLanguage=()=>language;

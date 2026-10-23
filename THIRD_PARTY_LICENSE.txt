@@ -1,9 +1,10 @@
 Third-party notices / 第三方组件与资源声明
-Updated: 2026-10-20
+Updated: 2026-10-22
 
 物派本身采用专有个人非商业许可。下列第三方组件及独立资源保留原许可；本软件许可不缩减其已授予的权利。使用这些组件不等于本软件或内置原创资产采用同样许可。
 
 Runtime components:
+- fflate 0.8.2 — MIT, Copyright (c) 2023 Arjun Barrett. Bundled from Three.js examples/jsm/libs/fflate.module.js. License: licenses/fflate-LICENSE.txt; ZIP: Licenses/fflate.txt.
 - Three.js 0.180.0 — MIT. Source/license: https://github.com/mrdoob/three.js ; vendor/package/LICENSE ; ZIP: Licenses/Three.txt.
 - Capacitor 8.5.2 — MIT, Ionic Team. https://github.com/ionic-team/capacitor ; licenses/Capacitor-LICENSE ; ZIP: Licenses/Capacitor.txt.
 - Electron 44.9.0 — MIT. https://github.com/electron/electron ; licenses/Electron-LICENSE.txt ; ZIP: Licenses/Electron.txt. Desktop runtime also includes Electron/Chromium third-party notices inside the application distribution.

@@ -5,4 +5,4 @@ export const SURFACE_PALETTES=Object.freeze([
  {id:'soft',name:'柔和',colors:['e9bdc3','9a687e','eee6dc','c98f99','6c5369','d8c3d3','f4e9c8'],tint:'#f5d5e5'}
 ]);
 export function paletteColors(colors,id='original'){const preset=SURFACE_PALETTES.find(p=>p.id===id);if(!preset||id==='original')return [...colors];return colors.map((_,i)=>preset.colors[i%preset.colors.length]);}
-export function nextDensity(current,random=Math.random){const index=Math.floor(Math.max(0,Math.min(.999999,random()))*9)+1;return index>=current?index+1:index;}
+export function nextDensity(current,random=Math.random){const values=Array.from({length:401},(_,i)=>(100+i)/100).filter(v=>v!==current);return values[Math.floor(Math.max(0,Math.min(.999999,random()))*values.length)];}

@@ -6,7 +6,7 @@ import yazl from 'yazl';
 import {platformFiles} from './platform-files.mjs';
 const version=JSON.parse(await readFile('package.json','utf8')).version;
 const models=(await readdir('.release-work')).filter(n=>n.endsWith('.usdz')).sort();
-if(models.length!==25)throw Error('Expected 25 native iPhone models');
+if(models.length!==26)throw Error('Expected 26 native iPhone models');
 const output=path.resolve('dist');if(path.dirname(output)!==process.cwd())throw Error('Unexpected package directory');
 await rm(output,{recursive:true,force:true});await mkdir(output,{recursive:true});
 for(const [platform,files]of Object.entries(platformFiles(version,models))){

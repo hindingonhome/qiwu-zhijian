@@ -2,6 +2,7 @@
 // Fruit body surfaces have UVs. Materials named Accent_* or Gold_* stay fixed.
 export const ARTIFACTS=[
  {id:'vase',name:'花瓶',category:'objects',asset:'./assets/vase.glb',thumbnail:'./assets/thumbs/vase.png',description:'瓶口收束、肩部饱满，连续纹样沿瓶身展开；内壁保留黄铜质感。',projection:'uv'},
+ {id:'plate',name:'圆形盘子',category:'objects',asset:'./assets/plate.glb',thumbnail:'./assets/thumbs/plate.png',description:'连续肌理仅铺贴于盘子顶面；侧沿与底面保持仿金漆黄铜效果，翻转可观察两面的材质对比。',projection:'uv',pose:[1.05,0,0]},
  {id:'mango',name:'芒果',category:'fruit',asset:'./assets/mango.glb',thumbnail:'./assets/thumbs/mango.png',description:'弯曲的果身承接橙金纹样，局部露出铜底；柄与叶片保留金色。',surface:'fruit-flow',projection:'uv',pose:[0,Math.PI,Math.PI/2]},
  {id:'strawberry',name:'草莓',category:'fruit',asset:'./assets/strawberry.glb',thumbnail:'./assets/thumbs/strawberry.png',description:'心形果身与细密起伏形成层次，红色纹样包裹表面，金色萼片衬托轮廓。',projection:'uv',surface:'fruit-flow'},
  {id:'dragonfruit',name:'火龙果',category:'fruit',asset:'./assets/dragonfruit.glb',thumbnail:'./assets/thumbs/dragonfruit.png',description:'层叠的果鳞勾勒起伏轮廓，红紫纹样沿果身延展，突出表面的节奏。',projection:'uv',surface:'fruit-flow'},

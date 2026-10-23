@@ -15,7 +15,7 @@ await copyFile('docs/IPHONE-OPENING.txt','.release-work/iPhone-Opening-Guide.txt
 await copyFile('docs/ADDING-SERIES.md','.release-work/Adding-Series.md');
 await copyFile('PRODUCT_README.md','.release-work/User-Guide.md');
 if(process.argv.includes('--native')){
- const kinds={'花瓶':'Vase','芒果':'Mango','草莓':'Strawberry','火龙果':'Dragonfruit','梨':'Pear','荔枝':'Lychee','苹果':'Apple','青苹果':'GreenApple','柿子':'Persimmon','桃子':'Peach','西瓜':'Watermelon','香蕉':'Banana','香蕉2':'Banana2'},seen=new Set();
+ const kinds={'圆形盘子':'Plate','花瓶':'Vase','芒果':'Mango','草莓':'Strawberry','火龙果':'Dragonfruit','梨':'Pear','荔枝':'Lychee','苹果':'Apple','青苹果':'GreenApple','柿子':'Persimmon','桃子':'Peach','西瓜':'Watermelon','香蕉':'Banana','香蕉2':'Banana2'},seen=new Set();
  for(const name of await readdir('release-assets/native-usdz'))if(name.endsWith('.usdz')){
   const kind=kinds[name.split('-')[0]],finish=name.includes('仿大漆')?'Lacquer':name.includes('落地色')?'Production':'Original';
   if(!kind)throw Error('Unmapped native model: '+name);

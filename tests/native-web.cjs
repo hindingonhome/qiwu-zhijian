@@ -1,3 +1,4 @@
+const {choosePattern}=require('./pattern-controls.cjs');
 const {chromium}=require('playwright'),assert=require('node:assert/strict'),{spawn}=require('node:child_process');
 (async()=>{
  const server=spawn(process.execPath,['server.cjs'],{stdio:'ignore'});let browser;
@@ -12,7 +13,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),{spa
   for(const id of ['apple','mango','watermelon']){
    await page.evaluate(id=>document.querySelector('[data-kind='+id+']').click(),id);
    await page.waitForFunction(()=>document.querySelector('#loading').hidden);
-   await page.locator('.quick-patterns [data-production]').click();
+   await choosePattern(page,id+'-production');
   }
   await page.locator('#capture').click();
   const downloadEvent=page.waitForEvent('download');await page.locator('#export-menu button').first().click();

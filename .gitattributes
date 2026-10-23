@@ -10,4 +10,6 @@ android/gradlew text eol=lf
 *.glb binary
 *.usdz binary
 *.hdr binary
+*.pdf binary
+*.gz binary
 vendor/** -whitespace

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol, session, ipcMain } = require('electron');
+const { app, BrowserWindow, protocol, session, ipcMain, dialog } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const { Readable } = require('node:stream');
@@ -27,6 +27,8 @@ if (testing) {
 }
 let window;
 const pending = new Map();
+const {ExportPreferences}=require('./export-preferences.cjs');
+let exportPreferences;
 function createWindow() {
   window = new BrowserWindow({ width: 1440, height: 960, minWidth: 760, minHeight: 640, title: '物派', backgroundColor: '#f4f1ec', icon: path.join(app.getAppPath(), 'assets/branding/icon.png'), webPreferences: { preload: path.join(__dirname, 'preload.cjs'), nodeIntegration: false, contextIsolation: true, sandbox: true, webSecurity: true, webviewTag: false } });
   window.removeMenu();
@@ -37,6 +39,12 @@ function createWindow() {
   window.loadURL(ORIGIN + '/index.html');
 }
 app.whenReady().then(() => {
+  exportPreferences=new ExportPreferences(app.getPath('userData'));
+  const trusted=event=>event.sender===window?.webContents&&event.senderFrame===event.sender.mainFrame&&isAppURL(event.senderFrame?.url);
+  ipcMain.handle('wupai:export-preferences',event=>{if(!trusted(event))throw Error('Blocked');return exportPreferences.read();});
+  ipcMain.handle('wupai:export-choose',async event=>{if(!trusted(event))throw Error('Blocked');const result=testing&&process.env.WUPAI_TEST_CHOOSE_DIR?{canceled:false,filePaths:[process.env.WUPAI_TEST_CHOOSE_DIR]}:await dialog.showOpenDialog(window,{title:'选择默认导出文件夹',properties:['openDirectory','createDirectory'],defaultPath:exportPreferences.read().directory||app.getPath('downloads')});return result.canceled?{cancelled:true}:exportPreferences.choose(result.filePaths[0]);});
+  ipcMain.handle('wupai:export-ask',(event,value)=>{if(!trusted(event))throw Error('Blocked');return exportPreferences.setAsk(value);});
+  ipcMain.handle('wupai:export-reset',event=>{if(!trusted(event))throw Error('Blocked');return exportPreferences.reset();});
   const root = path.join(app.getAppPath(), 'desktop-web');
   protocol.handle('wupai', request => {
     const file = resolveAppPath(request.url, root);
@@ -55,6 +63,7 @@ app.whenReady().then(() => {
     if (queue && !queue.length) pending.delete(item.getURL());
     if (!contents || contents !== window?.webContents || !isDownloadURL(item.getURL())) { event.preventDefault(); job?.reject(new Error('Download blocked')); return; }
     const name = job?.name || item.getFilename();
+    if(job?.target)item.setSavePath(job.target);
     item.setSaveDialogOptions({ title: '保存物派文件', defaultPath: name });
     if (testing && process.env.WUPAI_TEST_DOWNLOAD_DIR) {
       const target = path.resolve(process.env.WUPAI_TEST_DOWNLOAD_DIR); fs.mkdirSync(target, { recursive: true });
@@ -67,11 +76,13 @@ app.whenReady().then(() => {
     });
     if (testing && process.env.WUPAI_TEST_CANCEL_DOWNLOAD === '1') item.cancel();
   });
-  ipcMain.handle('wupai:download', (event, url, name) => {
+  ipcMain.handle('wupai:download', async (event, url, name) => {
     if (event.sender !== window?.webContents || event.senderFrame !== event.sender.mainFrame || !isAppURL(event.senderFrame?.url) || !isDownloadURL(url)) throw new Error('Download blocked');
     name = safeFilename(name);
+    let target;const prefs=exportPreferences.read();
+    if(!(testing&&process.env.WUPAI_TEST_DOWNLOAD_DIR)){if(prefs.askEachTime){const result=await dialog.showSaveDialog(window,{title:'保存物派文件',defaultPath:path.join(prefs.directory||app.getPath('downloads'),name)});if(result.canceled||!result.filePath)return {cancelled:true};target=result.filePath;}else target=exportPreferences.target(name);}
     return new Promise((resolve, reject) => {
-      const queue = pending.get(url) || []; queue.push({ name, resolve, reject }); pending.set(url, queue);
+      const queue = pending.get(url) || []; queue.push({ name, target, resolve, reject }); pending.set(url, queue);
       try { event.sender.downloadURL(url); } catch (error) { queue.pop(); if (!queue.length) pending.delete(url); reject(error); }
     });
   });

@@ -9,14 +9,17 @@ async function build(){
  const code=require('esbuild').buildSync({stdin:{contents:app,resolveDir:root,sourcefile:'app.mjs'},bundle:true,format:'iife',target:'safari15',minify:true,write:false}).outputFiles[0].text;
  const assets=new Map(),{ARTIFACTS}=await import('./artifact-library.mjs');
  for(const item of ARTIFACTS)for(const [file,mime]of [[item.asset,'model/gltf-binary'],[item.thumbnail,'image/png']])if(file)assets.set(file,{file,mime});
- for(const [file,mime]of [['brass/color.jpg','image/jpeg'],['brass/normal.jpg','image/jpeg'],['brass/roughness.jpg','image/jpeg'],['brass/metalness.jpg','image/jpeg'],['friend/orange-gold.png','image/png'],['friend/lacquer.png','image/png'],['friend/lacquer-metalness.png','image/png'],['friend/lacquer-roughness.png','image/png'],['friend/orange-gold.jpg','image/jpeg']])assets.set('./assets/'+file,{file:'./assets/'+file,mime});
+ for(const [file,mime]of [['pattern-master.json.gz','application/gzip'],['brass/color.jpg','image/jpeg'],['brass/normal.jpg','image/jpeg'],['brass/roughness.jpg','image/jpeg'],['brass/metalness.jpg','image/jpeg'],['friend/orange-gold.png','image/png'],['friend/lacquer.png','image/png'],['friend/lacquer-metalness.png','image/png'],['friend/lacquer-roughness.png','image/png'],['friend/orange-gold.jpg','image/jpeg']])assets.set('./assets/'+file,{file:'./assets/'+file,mime});
  assets.set('./assets/museum.hdr',{file:desktop?'./assets/museum.hdr':'./assets/mobile-museum.hdr',mime:'application/octet-stream'});
  let mobileScript;
  if(native){
   const outputFlag=process.argv.indexOf('--output'),target=path.dirname(path.resolve(outputFlag>=0?process.argv[outputFlag+1]:'mobile-web/index.html'));
   fs.mkdirSync(target,{recursive:true});
-  for(const [key,{file}]of assets){const destination=path.join(target,key.replace(/^\.\//,''));fs.mkdirSync(path.dirname(destination),{recursive:true});fs.copyFileSync(path.join(root,file),destination);}
-  fs.writeFileSync(path.join(target,'app.js'),code);mobileScript='<script src="app.js"></script>';
+  const nativeAssetPaths={};
+  // Android AAPT automatically inflates *.gz assets and strips their suffix.
+  // Keep gzip bytes intact under a binary suffix and resolve the public key.
+  for(const [key,{file}]of assets){const outputKey=!desktop&&key.endsWith('.gz')?key.slice(0,-3)+'.bin':key;if(outputKey!==key)nativeAssetPaths[key]=outputKey;const destination=path.join(target,outputKey.replace(/^\.\//,''));fs.mkdirSync(path.dirname(destination),{recursive:true});fs.copyFileSync(path.join(root,file),destination);}
+  fs.writeFileSync(path.join(target,'app.js'),code);mobileScript=(Object.keys(nativeAssetPaths).length?'<script>globalThis.MUSEUM_ASSETS='+JSON.stringify(nativeAssetPaths)+'</script>':'')+'<script src="app.js"></script>';
  }else{
  // Inert base64 blocks avoid compiling every model into a huge JS string literal.
  // Convert on first use and cache Blob URLs; decode in chunks to limit peak memory.

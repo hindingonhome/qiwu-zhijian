@@ -1,3 +1,5 @@
+import {swatchItem} from './swatch-item.mjs';
+import {styleSwatch} from './swatch-style.mjs';
 import {ARTIFACTS} from './artifact-library.mjs';
 import {FRUIT_PROFILES} from './fruit-profiles.mjs';
 const ordered=[];
@@ -10,7 +12,7 @@ for(const item of ARTIFACTS.filter(item=>item.category==='fruit')){
 for(const id of Object.keys(FRUIT_PROFILES))add(id);
 export const VASE_PROFILE_IDS=Object.freeze(ordered);
 
-export function initVaseTextures({viewer,getKind,onApplied=()=>{}}){
+export function initVaseTextures({viewer,getKind,getOwned=()=>[],getTextures=()=>[],getSurface=()=>'',onTexture=()=>{},onApplied=()=>{},onRemove=()=>{}}){
  const groups=[];let active=null,pinned=false,closeTimer;
  function close(){clearTimeout(closeTimer);if(active){active.popover.hidden=true;active.more.setAttribute('aria-expanded','false');active=null;}pinned=false;}
  function position(group){
@@ -19,39 +21,45 @@ export function initVaseTextures({viewer,getKind,onApplied=()=>{}}){
   panel.style.left=Math.max(12,Math.min(innerWidth-width-12,rect.left+rect.width/2-width/2))+'px';
   panel.style.top=Math.max(12,rect.top-height-12)+'px';
  }
- function open(group,pin=false){if(getKind()!=='vase')return;clearTimeout(closeTimer);if(active!==group)close();active=group;pinned=pin;group.popover.hidden=false;group.more.setAttribute('aria-expanded','true');position(group);}
+ function open(group,pin=false){clearTimeout(closeTimer);if(active!==group)close();active=group;pinned=pin;group.popover.hidden=false;group.more.setAttribute('aria-expanded','true');position(group);}
  function scheduleClose(){if(!pinned)closeTimer=setTimeout(close,220);}
- function syncPressed(){for(const group of groups)for(const button of group.buttons)button.setAttribute('aria-pressed',String(getKind()==='vase'&&(viewer.settings?.vaseProfile===button.dataset.vaseProfile||(viewer.settings?.fruitFlow&&viewer.settings?.fruitProfile===button.dataset.vaseProfile))));}
+ function syncPressed(){for(const group of groups){for(const button of group.buttons)button.setAttribute('aria-pressed',String(!viewer.settings?.solid&&!viewer.settings?.original&&(viewer.settings?.vaseProfile===button.dataset.vaseProfile||(viewer.settings?.fruitFlow&&viewer.settings?.fruitProfile===button.dataset.vaseProfile))));for(const button of group.custom.values())button.setAttribute('aria-pressed',String(!viewer.settings?.original&&getSurface()===button.dataset.textureId));}}
  for(const [index,host]of [...document.querySelectorAll('.quick-patterns,.sample-row')].entries()){
   const more=document.createElement('button');more.type='button';more.className='vase-more';more.innerHTML='<span class="sr-only">...</span><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>';more.setAttribute('aria-label','更多花瓶纹样');more.setAttribute('aria-expanded','false');more.setAttribute('aria-controls','vase-textures-'+index);
   const popover=document.createElement('div');popover.id='vase-textures-'+index;popover.className='vase-texture-popover';popover.hidden=true;popover.setAttribute('role','group');popover.setAttribute('aria-label','更多花瓶纹样');document.body.append(popover);
-  const group={host,more,popover,buttons:[]};groups.push(group);
+  const group={host,more,popover,buttons:[],custom:new Map()};groups.push(group);
   for(const id of VASE_PROFILE_IDS){
-   const profile=FRUIT_PROFILES[id],button=document.createElement('button');button.type='button';button.className='swatch vase-profile';button.dataset.vaseProfile=id;button.setAttribute('aria-label',profile.name+(id.endsWith('-production')?'纹样':'原配色纹样'));button.setAttribute('aria-pressed','false');button.style.background='conic-gradient('+(profile.cardColors||profile.colors).map(color=>'#'+color).join(',')+')';
+   const profile=FRUIT_PROFILES[id],button=document.createElement('button');button.type='button';button.className='swatch vase-profile';button.dataset.vaseProfile=id;button.setAttribute('aria-label',profile.name+(id.endsWith('-production')?'纹样':'原配色纹样'));button.setAttribute('aria-pressed','false');styleSwatch(button,profile.colors,profile.weights);
    button.onclick=async()=>{
-    if(getKind()!=='vase')return;
     document.querySelectorAll('.quick-patterns .swatch,.sample-row .swatch').forEach(other=>other.setAttribute('aria-pressed','false'));
-    await onApplied(id);syncPressed();close();
+    await onApplied(id);refresh();close();
    };
-   group.buttons.push(button);
+   button._swatchItem=host.matches('.quick-patterns')?swatchItem(button,()=>onRemove('vase-profile:'+id)):button;group.buttons.push(button);
   }
+  group.base=[...host.querySelectorAll('[data-surface], [data-lacquer]')];if(host.matches('.quick-patterns'))for(const button of group.base){const next=button.nextSibling;button._swatchItem=swatchItem(button,()=>onRemove(button.dataset.surface||'lacquer'));host.insertBefore(button._swatchItem,next);}
   const clear=host.querySelector('#clear-texture');host.insertBefore(more,clear);
   more.onclick=()=>{if(active===group&&pinned)close();else open(group,true);};
   more.addEventListener('pointerenter',event=>{if(event.pointerType!=='touch'&&matchMedia('(hover:hover)').matches)open(group,false);});
   more.addEventListener('pointerleave',scheduleClose);popover.addEventListener('pointerenter',()=>clearTimeout(closeTimer));popover.addEventListener('pointerleave',scheduleClose);
  }
  document.addEventListener('pointerdown',event=>{if(active&&!active.popover.contains(event.target)&&!active.more.contains(event.target))close();});
- document.addEventListener('click',event=>{const button=event.target.closest?.('.swatch');if(button&&!button.dataset.vaseProfile)for(const group of groups)for(const extra of group.buttons)extra.setAttribute('aria-pressed','false');});
+ document.addEventListener('click',event=>{const button=event.target.closest?.('.swatch');if(button&&!button.dataset.vaseProfile&&button.closest('.quick-patterns,.sample-row,.vase-texture-popover'))for(const group of groups)for(const extra of group.buttons)extra.setAttribute('aria-pressed','false');});
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&active){const trigger=active.more;close();trigger.focus();}});
  window.addEventListener('resize',close);window.addEventListener('scroll',close,true);
  function refresh(){
-  close();const isVase=getKind()==='vase';
+  close();
   for(const group of groups){
-   group.host.classList.toggle('vase-palette',isVase);
-   group.host.closest('.object-controls')?.classList.toggle('has-vase-palette',isVase);
-   const base=[...group.host.querySelectorAll(':scope > .swatch:not([data-vase-profile])')].filter(button=>!button.hidden).length,visible=Math.max(0,8-base);
-   group.buttons.forEach((button,index)=>{button.hidden=!isVase;if(index<visible)group.host.insertBefore(button,group.more);else group.popover.append(button);});
-   group.more.hidden=!isVase||group.buttons.length<=visible;
+   group.host.classList.add('vase-palette');
+   group.host.closest('.object-controls')?.classList.add('has-vase-palette');
+   const live=new Set(getTextures().map(entry=>entry.id));for(const [id,button]of group.custom)if(!live.has(id)){(button._swatchItem||button).remove();group.custom.delete(id);}
+   const all=group.host.matches('.sample-row'),owned=getOwned(getKind());
+   for(const entry of getTextures())if(!group.custom.has(entry.id)){const button=document.createElement('button');button.type='button';button.className='swatch custom-texture';button.dataset.textureId=entry.id;button.dataset.userContent='';button.setAttribute('aria-label',entry.name);button.setAttribute('title',entry.name);styleSwatch(button,entry.colors);button.onclick=async()=>{await onTexture(entry);refresh();};button._swatchItem=all?button:swatchItem(button,()=>onRemove(entry.id));group.custom.set(entry.id,button);}
+   for(const button of group.base){const show=all||owned.includes(button.dataset.surface||'lacquer');button.hidden=!show;if(button._swatchItem)button._swatchItem.hidden=!show;}const lacquer=group.base.find(button=>button.hasAttribute('data-lacquer'));
+   const candidates=[...group.buttons,...group.custom.values()].filter(button=>{const id=button.dataset.textureId||'vase-profile:'+button.dataset.vaseProfile;const show=all||owned.includes(id);button.hidden=!show;if(button._swatchItem)button._swatchItem.hidden=!show;if(!show)group.popover.append(button._swatchItem||button);return show;});
+   if(!all)candidates.sort((a,b)=>owned.indexOf(a.dataset.textureId||'vase-profile:'+a.dataset.vaseProfile)-owned.indexOf(b.dataset.textureId||'vase-profile:'+b.dataset.vaseProfile));
+   const base=group.base.filter(button=>!button.hidden).length,visible=all?candidates.length:Math.max(0,8-base);
+   candidates.forEach((button,index)=>{if(index<visible)group.host.insertBefore(button._swatchItem||button,group.more);else group.popover.append(button._swatchItem||button);});if(lacquer&&!lacquer.hidden)group.host.insertBefore(lacquer._swatchItem||lacquer,group.more);
+   group.more.hidden=candidates.length<=visible;group.more.setAttribute('aria-label','更多纹样');group.popover.setAttribute('aria-label',all?'更多纹样':'当前器物纹样');
   }
   syncPressed();
  }

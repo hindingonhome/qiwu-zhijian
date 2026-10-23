@@ -1,3 +1,4 @@
+import {applyPlateEdgeFinish} from './plate-edge.mjs';
 import {safeViewport,fitDistance} from './layout.mjs';
 import {PAINT_FINISH,applyPaintFinish} from './paint-finish.mjs';
 import {exportCurrentModel} from './model-export.mjs';
@@ -103,15 +104,15 @@ export class GalleryViewer{
  setTexture(canvas){
   if(canvas&&this.texture?.image===canvas){this.settings.original=false;this.updateMaterial();return;}
   if(this.texture)this.texture.dispose();this.texture=canvas?new THREE.CanvasTexture(canvas):null;
-  if(this.texture){this.texture.colorSpace=THREE.SRGBColorSpace;this.texture.wrapS=this.texture.wrapT=THREE.RepeatWrapping;this.texture.anisotropy=this.renderer.capabilities.getMaxAnisotropy();}
+  if(this.texture){if(this.currentKind==='plate')this.texture.flipY=false;this.texture.colorSpace=THREE.SRGBColorSpace;this.texture.wrapS=this.texture.wrapT=THREE.RepeatWrapping;this.texture.anisotropy=this.renderer.capabilities.getMaxAnisotropy();}
   this.settings.original=false;this.updateMaterial();
  }
  useMangoAtlas(){const body=this.meshes.find(m=>!m.userData.keepOriginalMaterial&&m.userData.originalMaterial?.map);if(!body)throw new Error('芒果专用纹样未找到');const atlas=body.userData.originalMaterial.map.clone();if(this.texture)this.texture.dispose();this.texture=atlas;atlas.needsUpdate=true;this.updateMaterial({fruitFlow:false,mangoLacquer:true,fruitProfile:'mango',lacquerVase:false,solid:false,original:false,repeat:1,color:'#ffffff',roughness:PAINT_FINISH.roughness,metalness:0});}
  async prepareLacquerMaps(){if(this.lacquerMaps)return;const loader=new THREE.TextureLoader();const maps=await Promise.all(['metalness','roughness'].map(n=>loader.loadAsync(assetURL('./assets/friend/lacquer-'+n+'.png'))));this.lacquerMaps={metalness:maps[0],roughness:maps[1]};for(const t of maps){t.flipY=true;t.wrapS=t.wrapT=THREE.RepeatWrapping;}}
  updateMaterial(settings={}){
-  Object.assign(this.settings,settings);if(settings.fruitFlow===true||settings.solid===true)this.settings.lacquerVase=false;this.dirty=true;const s={...this.settings};
+  Object.assign(this.settings,settings);if(this.currentKind==='plate')this.settings.projection='uv';if(settings.fruitFlow===true||settings.solid===true)this.settings.lacquerVase=false;this.dirty=true;const s={...this.settings};
   if(this.texture){this.texture.repeat.set(s.repeat,s.repeat);this.texture.center.set(.5,.5);this.texture.rotation=s.angle*Math.PI/180;this.texture.offset.set(s.offsetX,s.offsetY);this.texture.updateMatrix();}
-  if(s.lacquerVase&&this.texture)for(const map of Object.values(this.lacquerMaps||{})){map.repeat.copy(this.texture.repeat);map.center.copy(this.texture.center);map.offset.copy(this.texture.offset);map.rotation=this.texture.rotation;map.updateMatrix();}
+  if(s.lacquerVase&&this.texture)for(const map of Object.values(this.lacquerMaps||{})){if(map.flipY!==this.texture.flipY){map.flipY=this.texture.flipY;map.needsUpdate=true;}map.repeat.copy(this.texture.repeat);map.center.copy(this.texture.center);map.offset.copy(this.texture.offset);map.rotation=this.texture.rotation;map.updateMatrix();}
   if(!this.root)return;this.root.updateMatrixWorld(true);const inverse=new THREE.Matrix4().copy(this.root.matrixWorld).invert();
   for(const mesh of this.meshes){
    if(mesh.userData.keepOriginalMaterial){mesh.material=mesh.userData.originalMaterial;continue;}
@@ -136,27 +137,34 @@ export class GalleryViewer{
     };
     material.customProgramCacheKey=()=>`artifact-triplanar-${s.repeat}-${s.angle}-${s.offsetX}-${s.offsetY}`;
    }
+   if(this.texture&&!s.fruitFlow&&!interior&&!s.solid){
+    const prior=material.onBeforeCompile,key=material.customProgramCacheKey();
+    material.onBeforeCompile=shader=>{prior(shader);shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n#ifdef USE_MAP\nfloat textureCopperAlpha=1.0-sampledDiffuseColor.a;diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.4793202,.1714411,.03310477),textureCopperAlpha);diffuseColor.a=1.0;\n#endif');
+     // Triplanar replaces map_fragment itself, so append to its sampling block.
+     if(!shader.fragmentShader.includes('float textureCopperAlpha='))shader.fragmentShader=shader.fragmentShader.replace('diffuseColor*=sampledDiffuseColor;','diffuseColor*=sampledDiffuseColor;float textureCopperAlpha=1.0-sampledDiffuseColor.a;diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.4793202,.1714411,.03310477),textureCopperAlpha);diffuseColor.a=1.0;');
+     shader.fragmentShader=shader.fragmentShader.replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\n#ifdef USE_MAP\nmetalnessFactor=mix(metalnessFactor,.95,textureCopperAlpha);\n#endif').replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\n#ifdef USE_MAP\nroughnessFactor=mix(roughnessFactor,.27,textureCopperAlpha);\n#endif');};material.customProgramCacheKey=()=>key+'-texture-alpha-copper-v1';
+   }
    if(s.fruitFlow&&!interior&&!s.solid){
-    const profile=this.settings.fruitProfile||this.currentKind;
+    const profile=this.settings.fruitProfile||this.currentKind,plateTop=this.currentKind==='plate';
     if(!mesh.geometry.boundingBox)mesh.geometry.computeBoundingBox();const box=mesh.geometry.boundingBox,origin=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3()),unit=1/Math.max(size.x,size.y,size.z);
     if(!mesh.geometry.attributes.coatMask){const count=mesh.geometry.attributes.position.count;mesh.geometry.setAttribute('coatMask',mesh.geometry.attributes._coat_mask||new THREE.Float32BufferAttribute(new Float32Array(count).fill(1),1));mesh.geometry.setAttribute('innerMask',mesh.geometry.attributes._inner_mask||new THREE.Float32BufferAttribute(new Float32Array(count),1));}
     material.clearcoat=PAINT_FINISH.clearcoat;material.clearcoatRoughness=PAINT_FINISH.clearcoatRoughness;
     material.onBeforeCompile=shader=>{
      Object.assign(shader.uniforms,fruitPaletteUniforms(profile,s.paletteId));shader.uniforms.fruitOrigin={value:origin};shader.uniforms.fruitUnit={value:unit};shader.uniforms.fruitDensity={value:effectiveDensity(profile,s.repeat)};
      shader.vertexShader='attribute float coatMask;attribute float innerMask; varying float fruitCoat;varying float fruitInner;varying vec3 fruitPosition; uniform vec3 fruitOrigin; uniform float fruitUnit;\n'+shader.vertexShader;
-     shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nfruitPosition=(position-fruitOrigin)*fruitUnit;fruitCoat=coatMask;fruitInner=innerMask;');
+     shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nfruitPosition=(position-fruitOrigin)*fruitUnit;'+(plateTop?'fruitPosition.y=0.;':'')+'fruitCoat=coatMask;fruitInner=innerMask;');
      shader.fragmentShader=buildFruitShader(profile)+shader.fragmentShader;
      shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`float fruitGold=1.0-fruitCoat;float fruitCopperAmount=fruitCopper(fruitPosition*fruitDensity);float fruitMetalMask=max(fruitCopperAmount,fruitGold);vec3 fruitBase=fruitColor(fruitField(fruitPosition*fruitDensity));fruitBase=mix(fruitBase,vec3(.4793202,.1714411,.03310477),fruitCopperAmount);fruitBase=mix(fruitBase,vec3(.6938718,.4178851,.05951124),fruitGold);diffuseColor.rgb*=fruitBase;`);
      shader.fragmentShader=shader.fragmentShader.replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor=mix(metalnessFactor,.95,fruitMetalMask);');
      shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,.27,fruitMetalMask);');
-    };material.customProgramCacheKey=()=> 'fruit-shared-palette-v2';
+    };material.customProgramCacheKey=()=>plateTop?'fruit-plate-top-palette-v1':'fruit-shared-palette-v2';
    }
    // Painted accessory masks remain gold for every body finish and imported pattern.
    if(!s.fruitFlow&&!interior&&mesh.geometry.attributes._coat_mask){
     mesh.geometry.setAttribute('accessoryCoat',mesh.geometry.attributes._coat_mask);const prior=material.onBeforeCompile,priorKey=material.customProgramCacheKey();
     material.onBeforeCompile=shader=>{prior(shader);shader.vertexShader='attribute float accessoryCoat;varying float accessoryGold;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\naccessoryGold=1.0-accessoryCoat;');shader.fragmentShader='varying float accessoryGold;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb=mix(diffuseColor.rgb,vec3(.6938718,.4178851,.05951124),accessoryGold);').replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor=mix(metalnessFactor,.95,accessoryGold);').replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,.27,accessoryGold);');};material.customProgramCacheKey=()=>priorKey+'-gold-mask';
    }
-   if(!interior&&!s.solid)applyPaintFinish(material,mesh.geometry);
+   if(!interior&&!s.solid){applyPaintFinish(material,mesh.geometry);if(this.currentKind==='plate')applyPlateEdgeFinish(material,mesh.geometry);}
    mesh.material=material;mesh.userData.editMaterial=material;
    cache.set(signature,material);while(cache.size>8){const key=cache.keys().next().value;cache.get(key).dispose();cache.delete(key);}
   }

@@ -17,3 +17,5 @@
 源泉圆体GenSen Rounded 2 TW Bold，SIL Open Font License 1.1。图标与字标使用轮廓，许可随包提供，仓库中见licenses/GenSen-OFL.txt，发行包内见Licenses/GenSen-OFL.txt。品牌商标或软件名称的使用不因字体许可自动获得授权。
 
 历史开发中试用的场馆资源不属于当前发行包的器物功能，不能将其许可误认为内置模型和纹样的通用许可。
+
+圆形盘子为用户本轮提供的模型。开发源文件为source-models/round-plate-original.glb；assets/plate.glb为只拆分顶底材质与重排顶面UV的派生文件，保留原拓扑。沿用项目提供资源的体验与商业授权边界。

@@ -17,6 +17,6 @@ export function initPreferences({library,viewer,appearance,download,status}){
  $('save-configuration').onclick=()=>{const configuration={format:'wupai-configuration',version:1,collections:store.state.collections,preferences:capture()};return save(new Blob([JSON.stringify(configuration,null,2)],{type:'application/json'}),'Wupai-Configuration.json');};
  $('save-library').onclick=()=>save(encodeBackup(store.state,capture()),'Wupai-Library.wupai');
  $('load-configuration').onchange=async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{if(file.size>2*1024*1024)throw Error('配置文件过大');const value=JSON.parse(await file.text());if(value.format!=='wupai-configuration'||value.version!==1)throw Error('不是物派配置文件');const state=configurationState(store.state,value),preferences=validatePreferences(value.preferences);await run(()=>store.restore({...state,preferences}),'已导入配置，可撤销。');}catch(error){status('配置导入失败：'+error.message,true);}};
- $('load-library').onchange=async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{const value=await decodeBackup(file);await run(()=>store.restore({...value.state,preferences:value.preferences}),'已恢复藏库，可撤销。');}catch(error){status('藏库恢复失败：'+error.message,true);}};
+ $('load-library').onchange=async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{const value=await decodeBackup(file);await run(()=>store.restore({...value.state,preferences:value.preferences}),'已恢复派库，可撤销。');}catch(error){status('派库恢复失败：'+error.message,true);}};
  return {capture};
 }

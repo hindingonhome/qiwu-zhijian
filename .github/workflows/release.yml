@@ -102,6 +102,7 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           cp android/app/build/outputs/apk/release/app-release.apk ".release-work/Wupai-${VERSION}-Android.apk"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose ".release-work/Wupai-${VERSION}-Android.apk"
+          python3 scripts/verify-texture-apk.py
       - uses: actions/upload-artifact@v4
         with:
           name: wupai-native-Android
