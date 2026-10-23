@@ -21,6 +21,9 @@ export function initAppearance(viewer){
  document.addEventListener('pointerout',event=>{if(target?.contains(event.target)&&!target.contains(event.relatedTarget))hide();});
  document.addEventListener('focusin',event=>show(find(event)));document.addEventListener('focusout',event=>{if(target?.contains(event.target)&&!target.contains(event.relatedTarget))hide();});
  document.addEventListener('click',event=>{const button=find(event);if(button)show(button);else hide();});
- const refreshTooltips=()=>document.querySelectorAll(selector).forEach(prepare);refreshTooltips();window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+ // Focus can scroll a compact panel after the click has already shown its label.
+ // Keep that label anchored while its control is still visible and active.
+ const onScroll=()=>{if(tip.hidden)return;const r=target?.getBoundingClientRect(),hit=r&&document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);if(target?.isConnected&&(target===document.activeElement||target.matches(':hover'))&&hit&&target.contains(hit))show(target);else hide();};
+ const refreshTooltips=()=>document.querySelectorAll(selector).forEach(prepare);refreshTooltips();window.addEventListener('scroll',onScroll,true);window.addEventListener('resize',hide);document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
  return {choose,refreshTooltips};
 }
